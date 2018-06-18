@@ -61,13 +61,8 @@
 			<version>2.7</version>
 		</dependency>
 
-		<!-- BigQuery 
-		<dependency>
-			<groupId>com.google.apis</groupId>
-			<artifactId>google-api-services-bigquery</artifactId>
-			<version>v2-rev391-1.23.0</version>
-		</dependency>
--->
+		<!-- BigQuery <dependency> <groupId>com.google.apis</groupId> <artifactId>google-api-services-bigquery</artifactId> 
+			<version>v2-rev391-1.23.0</version> </dependency> -->
 		<!-- GUAVA -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -118,6 +113,12 @@
 			<version>1.22.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.2</version>
+		</dependency>
 
 	</dependencies>
 

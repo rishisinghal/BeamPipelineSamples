@@ -83,7 +83,7 @@ public class StarterPipelinePubSub {
 		tableRowsToWrite.apply("Write message into BigQuery",
 				BigQueryIO.writeTableRows()
 				.to(config.getString("gcp.projectId") + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
-				.withSchema(BigQueryTelemetryProcess.getSchema())
+				.withSchema(BigQueryTelemetryProcess.getSchema(DeviceTelemetry.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
 				);

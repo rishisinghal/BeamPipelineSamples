@@ -1,4 +1,4 @@
-{"namespace": "com.sample.iot.df.shared",
+{"namespace": "com.sample.beam.df.shared",
  "type": "record",
  "name": "DeviceTelemetry",
  "fields": [
