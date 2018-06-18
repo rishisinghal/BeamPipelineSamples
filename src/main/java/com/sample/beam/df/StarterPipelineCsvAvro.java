@@ -62,7 +62,7 @@ public class StarterPipelineCsvAvro {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		PCollection<String> lines = pipeline.apply(TextIO.read().from("gs://ristemp/employee.csv"));
+		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
 		PCollection<Employee> empRows=lines.apply("Convert to Employee",ParDo.of(new EmployeeMsg()));
 
 		//Convert messages into TableRow for BigQuery
