@@ -1,9 +1,18 @@
-IOT Data Pipeline 
-=================
-This pipeline will stream data from Pub/Sub both to BigQuery & BigTable
+Beam Data Samples 
+==================
+
+### Samples for Apache Beam/Dataflow 
+
+- StarterPipelinePubSub - Read from Pub/Sub the device telemetry data and write it to BigQuery and Bigtable. Avro is used to define the data schema.
 
 
-#### How to compile
+- StarterPipelineMySQL - Read from MySQL database and write to BigQuery using JDBCIO. 
+
+
+- StarterPipelineMySQLNested - Read from MySQL database, created nested repeating tables and write to BigQuery using JDBCIO. 
+
+
+### How to compile
 ```bash
-mvn compile exec:java -Dexec.mainClass=com.sample.iot.df.StarterPipeline
+mvn clean package
 ```
