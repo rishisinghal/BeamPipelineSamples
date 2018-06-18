@@ -51,15 +51,15 @@ import com.google.api.services.bigquery.model.TableSchema;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineMySQLNested {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineMySQLNested.class);
+public class StarterPipelineDbNested {
+	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineDbNested.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
-	private Configuration config;
+	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelineMySQLNested sp = new StarterPipelineMySQLNested();		
+		StarterPipelineDbNested sp = new StarterPipelineDbNested();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -83,11 +83,9 @@ public class StarterPipelineMySQLNested {
 
 		return JdbcIO.<KV<Integer, TableRow>>read()
 				.withDataSourceConfiguration(
-						JdbcIO.DataSourceConfiguration.create("com.mysql.jdbc.Driver",
-								"jdbc:mysql://localhost:3306/employee")
-						.withUsername("root"))
-				.withQuery("select e.emp_no,e.first_name,d.dept_no,d.from_date from employee.employees e "
-						+ "inner join dept_emp d on e.emp_no=d.emp_no limit 100")						
+						JdbcIO.DataSourceConfiguration.create(config.getString("jdbc.driver"),config.getString("jdbc.url"))
+						.withUsername(config.getString("jdbc.user")))
+				.withQuery(config.getString("jdbc.query"))							
 				.withCoder(KvCoder.of(BigEndianIntegerCoder.of(), TableRowJsonCoder.of()))
 				.withRowMapper(new JdbcIO.RowMapper<KV<Integer, TableRow>>() {
 					private static final long serialVersionUID = 1L;
