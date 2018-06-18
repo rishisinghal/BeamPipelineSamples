@@ -1,0 +1,14 @@
+{"namespace": "com.sample.beam.df.shared",
+ "type": "record",
+ "name": "Employee",
+ "fields": [
+ 	 
+ 	 // initial  fields
+     {"name": "id",  			"type": ["int", "null"]},
+     {"name": "bday",  			"type":{"type": "int", "logicalType":"date"}},
+     {"name": "firstName", 		"type": ["string", "null"]},
+     {"name": "lastName", 		"type": ["string", "null"]},
+     {"name": "gender", 		"type": ["string", "null"]},
+     {"name": "hireDate", 		"type":{"type": "int", "logicalType":"date"}}
+ ]
+}
