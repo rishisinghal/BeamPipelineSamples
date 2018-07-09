@@ -8,6 +8,7 @@
 
 package com.sample.beam.df;
 
+import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
 import org.apache.beam.runners.direct.DirectRunner;
 import org.apache.beam.sdk.Pipeline;
@@ -97,10 +98,15 @@ public class StarterPipelineCsvAvro {
 			options.setAppName(config.getString("df.appName"));
 			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.stagingLocation"));
-			options.setTempLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
-					"/"+config.getString("gcs.tempLocation"));
-			//			options.setRunner(DataflowRunner.class);
-			options.setRunner(DirectRunner.class);
+			
+			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
+					"/"+config.getString("gcs.tempLocation");
+			
+			LOG.info("Temp location:"+tempLocation);
+			options.setTempLocation(tempLocation);
+			
+			options.setRunner(DataflowRunner.class);
+//			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);

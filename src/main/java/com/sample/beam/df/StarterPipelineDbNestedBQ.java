@@ -51,15 +51,15 @@ import com.google.api.services.bigquery.model.TableSchema;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineDbNested {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineDbNested.class);
+public class StarterPipelineDbNestedBQ {
+	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineDbNestedBQ.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelineDbNested sp = new StarterPipelineDbNested();		
+		StarterPipelineDbNestedBQ sp = new StarterPipelineDbNestedBQ();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file

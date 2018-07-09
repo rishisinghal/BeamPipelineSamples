@@ -102,7 +102,6 @@ public class StarterPipelinePubSub {
 		//read messages from Pub/Sub 
 		PCollection<String> pubSubTelemetryMsg=pipeline.apply("Read telemetry msg from PubSub",
 				PubsubIO.readStrings().fromSubscription(config.getString("pubsub.subscription.telemetry")));
-
 		// convert to DeviceMessage
 		PCollection<DeviceTelemetry>  devTeleMsgRows=pubSubTelemetryMsg.apply("Convert to DeviceMessage",ParDo.of(new IoTTelemetryMsg()));
 		return devTeleMsgRows;

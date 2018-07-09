@@ -6,6 +6,9 @@
 package com.sample.beam.df.shared;
 
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.message.BinaryMessageEncoder;
+import org.apache.avro.message.BinaryMessageDecoder;
+import org.apache.avro.message.SchemaStore;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
@@ -13,6 +16,41 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
   private static final long serialVersionUID = 912833280119114726L;
   public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Employee\",\"namespace\":\"com.sample.beam.df.shared\",\"fields\":[{\"name\":\"id\",\"type\":[\"int\",\"null\"]},{\"name\":\"bday\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"gender\",\"type\":[\"string\",\"null\"]},{\"name\":\"hireDate\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
+
+  private static SpecificData MODEL$ = new SpecificData();
+
+  private static final BinaryMessageEncoder<Employee> ENCODER =
+      new BinaryMessageEncoder<Employee>(MODEL$, SCHEMA$);
+
+  private static final BinaryMessageDecoder<Employee> DECODER =
+      new BinaryMessageDecoder<Employee>(MODEL$, SCHEMA$);
+
+  /**
+   * Return the BinaryMessageDecoder instance used by this class.
+   */
+  public static BinaryMessageDecoder<Employee> getDecoder() {
+    return DECODER;
+  }
+
+  /**
+   * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
+   * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
+   */
+  public static BinaryMessageDecoder<Employee> createDecoder(SchemaStore resolver) {
+    return new BinaryMessageDecoder<Employee>(MODEL$, SCHEMA$, resolver);
+  }
+
+  /** Serializes this Employee to a ByteBuffer. */
+  public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
+    return ENCODER.encode(this);
+  }
+
+  /** Deserializes a Employee from a ByteBuffer. */
+  public static Employee fromByteBuffer(
+      java.nio.ByteBuffer b) throws java.io.IOException {
+    return DECODER.decode(b);
+  }
+
   @Deprecated public java.lang.Integer id;
   @Deprecated public org.joda.time.LocalDate bday;
   @Deprecated public java.lang.CharSequence firstName;
@@ -62,8 +100,9 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
   protected static final org.apache.avro.data.TimeConversions.DateConversion DATE_CONVERSION = new org.apache.avro.data.TimeConversions.DateConversion();
   protected static final org.apache.avro.data.TimeConversions.TimeConversion TIME_CONVERSION = new org.apache.avro.data.TimeConversions.TimeConversion();
   protected static final org.apache.avro.data.TimeConversions.TimestampConversion TIMESTAMP_CONVERSION = new org.apache.avro.data.TimeConversions.TimestampConversion();
+  protected static final org.apache.avro.Conversions.DecimalConversion DECIMAL_CONVERSION = new org.apache.avro.Conversions.DecimalConversion();
 
-  private final org.apache.avro.Conversion<?>[] conversions =
+  private static final org.apache.avro.Conversion<?>[] conversions =
       new org.apache.avro.Conversion<?>[] {
       null,
       DATE_CONVERSION,
@@ -530,32 +569,35 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Employee build() {
       try {
         Employee record = new Employee();
-        record.id = fieldSetFlags()[0] ? this.id : (java.lang.Integer) defaultValue(fields()[0]);
-        record.bday = fieldSetFlags()[1] ? this.bday : (org.joda.time.LocalDate) defaultValue(fields()[1]);
-        record.firstName = fieldSetFlags()[2] ? this.firstName : (java.lang.CharSequence) defaultValue(fields()[2]);
-        record.lastName = fieldSetFlags()[3] ? this.lastName : (java.lang.CharSequence) defaultValue(fields()[3]);
-        record.gender = fieldSetFlags()[4] ? this.gender : (java.lang.CharSequence) defaultValue(fields()[4]);
-        record.hireDate = fieldSetFlags()[5] ? this.hireDate : (org.joda.time.LocalDate) defaultValue(fields()[5]);
+        record.id = fieldSetFlags()[0] ? this.id : (java.lang.Integer) defaultValue(fields()[0], record.getConversion(0));
+        record.bday = fieldSetFlags()[1] ? this.bday : (org.joda.time.LocalDate) defaultValue(fields()[1], record.getConversion(1));
+        record.firstName = fieldSetFlags()[2] ? this.firstName : (java.lang.CharSequence) defaultValue(fields()[2], record.getConversion(2));
+        record.lastName = fieldSetFlags()[3] ? this.lastName : (java.lang.CharSequence) defaultValue(fields()[3], record.getConversion(3));
+        record.gender = fieldSetFlags()[4] ? this.gender : (java.lang.CharSequence) defaultValue(fields()[4], record.getConversion(4));
+        record.hireDate = fieldSetFlags()[5] ? this.hireDate : (org.joda.time.LocalDate) defaultValue(fields()[5], record.getConversion(5));
         return record;
-      } catch (Exception e) {
+      } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
     }
   }
 
-  private static final org.apache.avro.io.DatumWriter
-    WRITER$ = new org.apache.avro.specific.SpecificDatumWriter(SCHEMA$);
+  @SuppressWarnings("unchecked")
+  private static final org.apache.avro.io.DatumWriter<Employee>
+    WRITER$ = (org.apache.avro.io.DatumWriter<Employee>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
     WRITER$.write(this, SpecificData.getEncoder(out));
   }
 
-  private static final org.apache.avro.io.DatumReader
-    READER$ = new org.apache.avro.specific.SpecificDatumReader(SCHEMA$);
+  @SuppressWarnings("unchecked")
+  private static final org.apache.avro.io.DatumReader<Employee>
+    READER$ = (org.apache.avro.io.DatumReader<Employee>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {
