@@ -13,8 +13,8 @@ import org.apache.avro.message.SchemaStore;
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
 public class Employee extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 912833280119114726L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Employee\",\"namespace\":\"com.sample.beam.df.shared\",\"fields\":[{\"name\":\"id\",\"type\":[\"int\",\"null\"]},{\"name\":\"bday\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"gender\",\"type\":[\"string\",\"null\"]},{\"name\":\"hireDate\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}}]}");
+  private static final long serialVersionUID = 4787114175065258249L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"Employee\",\"namespace\":\"com.sample.beam.df.shared\",\"fields\":[{\"name\":\"id\",\"type\":[\"int\",\"null\"]},{\"name\":\"bday\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}},{\"name\":\"firstName\",\"type\":[\"string\",\"null\"]},{\"name\":\"lastName\",\"type\":[\"string\",\"null\"]},{\"name\":\"gender\",\"type\":[\"string\",\"null\"]},{\"name\":\"dept\",\"type\":[\"string\",\"null\"]},{\"name\":\"hireDate\",\"type\":{\"type\":\"int\",\"logicalType\":\"date\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -56,6 +56,7 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
   @Deprecated public java.lang.CharSequence firstName;
   @Deprecated public java.lang.CharSequence lastName;
   @Deprecated public java.lang.CharSequence gender;
+  @Deprecated public java.lang.CharSequence dept;
   @Deprecated public org.joda.time.LocalDate hireDate;
 
   /**
@@ -72,14 +73,16 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
    * @param firstName The new value for firstName
    * @param lastName The new value for lastName
    * @param gender The new value for gender
+   * @param dept The new value for dept
    * @param hireDate The new value for hireDate
    */
-  public Employee(java.lang.Integer id, org.joda.time.LocalDate bday, java.lang.CharSequence firstName, java.lang.CharSequence lastName, java.lang.CharSequence gender, org.joda.time.LocalDate hireDate) {
+  public Employee(java.lang.Integer id, org.joda.time.LocalDate bday, java.lang.CharSequence firstName, java.lang.CharSequence lastName, java.lang.CharSequence gender, java.lang.CharSequence dept, org.joda.time.LocalDate hireDate) {
     this.id = id;
     this.bday = bday;
     this.firstName = firstName;
     this.lastName = lastName;
     this.gender = gender;
+    this.dept = dept;
     this.hireDate = hireDate;
   }
 
@@ -92,7 +95,8 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
     case 2: return firstName;
     case 3: return lastName;
     case 4: return gender;
-    case 5: return hireDate;
+    case 5: return dept;
+    case 6: return hireDate;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -106,6 +110,7 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
       new org.apache.avro.Conversion<?>[] {
       null,
       DATE_CONVERSION,
+      null,
       null,
       null,
       null,
@@ -127,7 +132,8 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
     case 2: firstName = (java.lang.CharSequence)value$; break;
     case 3: lastName = (java.lang.CharSequence)value$; break;
     case 4: gender = (java.lang.CharSequence)value$; break;
-    case 5: hireDate = (org.joda.time.LocalDate)value$; break;
+    case 5: dept = (java.lang.CharSequence)value$; break;
+    case 6: hireDate = (org.joda.time.LocalDate)value$; break;
     default: throw new org.apache.avro.AvroRuntimeException("Bad index");
     }
   }
@@ -213,6 +219,22 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
   }
 
   /**
+   * Gets the value of the 'dept' field.
+   * @return The value of the 'dept' field.
+   */
+  public java.lang.CharSequence getDept() {
+    return dept;
+  }
+
+  /**
+   * Sets the value of the 'dept' field.
+   * @param value the value to set.
+   */
+  public void setDept(java.lang.CharSequence value) {
+    this.dept = value;
+  }
+
+  /**
    * Gets the value of the 'hireDate' field.
    * @return The value of the 'hireDate' field.
    */
@@ -265,6 +287,7 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
     private java.lang.CharSequence firstName;
     private java.lang.CharSequence lastName;
     private java.lang.CharSequence gender;
+    private java.lang.CharSequence dept;
     private org.joda.time.LocalDate hireDate;
 
     /** Creates a new Builder */
@@ -298,9 +321,13 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
         this.gender = data().deepCopy(fields()[4].schema(), other.gender);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.hireDate)) {
-        this.hireDate = data().deepCopy(fields()[5].schema(), other.hireDate);
+      if (isValidValue(fields()[5], other.dept)) {
+        this.dept = data().deepCopy(fields()[5].schema(), other.dept);
         fieldSetFlags()[5] = true;
+      }
+      if (isValidValue(fields()[6], other.hireDate)) {
+        this.hireDate = data().deepCopy(fields()[6].schema(), other.hireDate);
+        fieldSetFlags()[6] = true;
       }
     }
 
@@ -330,9 +357,13 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
         this.gender = data().deepCopy(fields()[4].schema(), other.gender);
         fieldSetFlags()[4] = true;
       }
-      if (isValidValue(fields()[5], other.hireDate)) {
-        this.hireDate = data().deepCopy(fields()[5].schema(), other.hireDate);
+      if (isValidValue(fields()[5], other.dept)) {
+        this.dept = data().deepCopy(fields()[5].schema(), other.dept);
         fieldSetFlags()[5] = true;
+      }
+      if (isValidValue(fields()[6], other.hireDate)) {
+        this.hireDate = data().deepCopy(fields()[6].schema(), other.hireDate);
+        fieldSetFlags()[6] = true;
       }
     }
 
@@ -531,6 +562,45 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
     }
 
     /**
+      * Gets the value of the 'dept' field.
+      * @return The value.
+      */
+    public java.lang.CharSequence getDept() {
+      return dept;
+    }
+
+    /**
+      * Sets the value of the 'dept' field.
+      * @param value The value of 'dept'.
+      * @return This builder.
+      */
+    public com.sample.beam.df.shared.Employee.Builder setDept(java.lang.CharSequence value) {
+      validate(fields()[5], value);
+      this.dept = value;
+      fieldSetFlags()[5] = true;
+      return this;
+    }
+
+    /**
+      * Checks whether the 'dept' field has been set.
+      * @return True if the 'dept' field has been set, false otherwise.
+      */
+    public boolean hasDept() {
+      return fieldSetFlags()[5];
+    }
+
+
+    /**
+      * Clears the value of the 'dept' field.
+      * @return This builder.
+      */
+    public com.sample.beam.df.shared.Employee.Builder clearDept() {
+      dept = null;
+      fieldSetFlags()[5] = false;
+      return this;
+    }
+
+    /**
       * Gets the value of the 'hireDate' field.
       * @return The value.
       */
@@ -544,9 +614,9 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
       * @return This builder.
       */
     public com.sample.beam.df.shared.Employee.Builder setHireDate(org.joda.time.LocalDate value) {
-      validate(fields()[5], value);
+      validate(fields()[6], value);
       this.hireDate = value;
-      fieldSetFlags()[5] = true;
+      fieldSetFlags()[6] = true;
       return this;
     }
 
@@ -555,7 +625,7 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
       * @return True if the 'hireDate' field has been set, false otherwise.
       */
     public boolean hasHireDate() {
-      return fieldSetFlags()[5];
+      return fieldSetFlags()[6];
     }
 
 
@@ -564,7 +634,7 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
       * @return This builder.
       */
     public com.sample.beam.df.shared.Employee.Builder clearHireDate() {
-      fieldSetFlags()[5] = false;
+      fieldSetFlags()[6] = false;
       return this;
     }
 
@@ -578,7 +648,8 @@ public class Employee extends org.apache.avro.specific.SpecificRecordBase implem
         record.firstName = fieldSetFlags()[2] ? this.firstName : (java.lang.CharSequence) defaultValue(fields()[2], record.getConversion(2));
         record.lastName = fieldSetFlags()[3] ? this.lastName : (java.lang.CharSequence) defaultValue(fields()[3], record.getConversion(3));
         record.gender = fieldSetFlags()[4] ? this.gender : (java.lang.CharSequence) defaultValue(fields()[4], record.getConversion(4));
-        record.hireDate = fieldSetFlags()[5] ? this.hireDate : (org.joda.time.LocalDate) defaultValue(fields()[5], record.getConversion(5));
+        record.dept = fieldSetFlags()[5] ? this.dept : (java.lang.CharSequence) defaultValue(fields()[5], record.getConversion(5));
+        record.hireDate = fieldSetFlags()[6] ? this.hireDate : (org.joda.time.LocalDate) defaultValue(fields()[6], record.getConversion(6));
         return record;
       } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);

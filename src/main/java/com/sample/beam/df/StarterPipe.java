@@ -8,6 +8,8 @@
 
 package com.sample.beam.df;
 
+import java.net.URL;
+
 import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
 import org.apache.beam.runners.direct.DirectRunner;
@@ -33,15 +35,15 @@ import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineCsvAvro {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineCsvAvro.class);
-	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
-	private static Configuration config;
+public class StarterPipe {
+	private static final Logger LOG = LoggerFactory.getLogger(StarterPipe.class);
+	private static final String DEFAULT_CONFIG_FILE = "/application1.properties";
+//	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelineCsvAvro sp = new StarterPipelineCsvAvro();		
+		StarterPipe sp = new StarterPipe();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -63,7 +65,7 @@ public class StarterPipelineCsvAvro {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
+		PCollection<String> lines = pipeline.apply(TextIO.read().from("gs://ristemp/employee.csv"));
 		PCollection<Employee> empRows=lines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
 
 		//Convert messages into TableRow for BigQuery
@@ -72,7 +74,7 @@ public class StarterPipelineCsvAvro {
 		//Write into BigQuery
 		tableRowsToWrite.apply("Write message into BigQuery",
 				BigQueryIO.writeTableRows()
-				.to(config.getString("gcp.projectId") + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
+				.to("training-sandbox-sgp" + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
 				.withSchema(BigQueryEmployeeProcess.getSchema(Employee.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
@@ -81,43 +83,43 @@ public class StarterPipelineCsvAvro {
 
 	public void init(String propFile)
 	{
-		Parameters params = new Parameters();
-		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
-				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-				.configure(params.properties()
-						.setFileName(propFile));
+//		 URL propFileURL = this.getClass().getClassLoader().getResource(propFile);
+//
+//		Parameters params = new Parameters();
+//		FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
+//				new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
+//				.configure(params.properties().setURL(propFileURL));
+		
 		try
 		{
 			LOG.info("Init Config start");
-			config = builder.getConfiguration();
+//			config = builder.getConfiguration();
 
 			//define pipeline options
 			options = PipelineOptionsFactory.create().as(DatabaseOptions.class);
 
 			// Set DataFlow options
-			options.setAppName(config.getString("df.appName"));
-			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
-					"/"+config.getString("gcs.stagingLocation"));
+			options.setAppName("dataflow-app-test");
+			options.setStagingLocation("gs://rislabs/iot-dataflow/staging");
 			
-			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
-					"/"+config.getString("gcs.tempLocation");
+			String tempLocation = "gs://rislabs/iot-dataflow/temp";
 			
 			LOG.info("Temp location:"+tempLocation);
 			options.setTempLocation(tempLocation);
 			
-//			options.setRunner(DataflowRunner.class);
-			options.setRunner(DirectRunner.class);
+			options.setRunner(DataflowRunner.class);
+//			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
-			options.setProject(config.getString("gcp.projectId"));
+			options.setProject("training-sandbox-sgp");
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);
-			options.setMaxNumWorkers(config.getInt("df.maxWorkers"));
-			options.setJobName(config.getString("df.baseJobName")+Utils.dateSecFormatter.format(new java.util.Date()));
+			options.setMaxNumWorkers(1);
+			options.setJobName("testdf"+Utils.dateSecFormatter.format(new java.util.Date()));
 
 			// Set BigQuery options
-			options.setBQDatasetId(config.getString("bq.datasetId"));
-			options.setBQTableName(config.getString("bq.empTable"));
+			options.setBQDatasetId("employee");
+			options.setBQTableName("emp_details_data");
 		}
-		catch(ConfigurationException cex)
+		catch(Exception cex)
 		{
 			LOG.error("Exception during initialization of properties:",cex);
 		}

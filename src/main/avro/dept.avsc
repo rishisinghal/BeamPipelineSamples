@@ -1,0 +1,11 @@
+{"namespace": "com.sample.beam.df.shared",
+ "type": "record",
+ "name": "Dept",
+ "fields": [
+ 	 
+ 	 // initial  fields
+     {"name": "empid",		 	"type": ["int", "null"]},
+     {"name": "dept",	 		"type": ["string", "null"]},     
+     {"name": "hireDate", 		"type":{"type": "int", "logicalType":"date"}}
+ ]
+}

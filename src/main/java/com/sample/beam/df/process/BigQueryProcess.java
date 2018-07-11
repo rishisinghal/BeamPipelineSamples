@@ -79,10 +79,8 @@ public class BigQueryProcess<T extends SpecificRecordBase> extends DoFn<T, Table
 				bqrow.set(f.name(), Utils.dateMsFormatter.print((DateTime)msg.get(f.name())));
 			else
 				bqrow.set(f.name(), msg.get(f.name()).toString());
-			
 		}
 		
 		return bqrow;
 	}
-	
 }

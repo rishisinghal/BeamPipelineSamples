@@ -9,6 +9,7 @@
      {"name": "firstName", 		"type": ["string", "null"]},
      {"name": "lastName", 		"type": ["string", "null"]},
      {"name": "gender", 		"type": ["string", "null"]},
+     {"name": "dept",	 		"type": ["string", "null"]},     
      {"name": "hireDate", 		"type":{"type": "int", "logicalType":"date"}}
  ]
 }

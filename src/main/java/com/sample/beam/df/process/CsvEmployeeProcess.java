@@ -8,10 +8,10 @@ import com.opencsv.CSVParser;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.Utils;
 
-public class EmployeeMsg extends DoFn<String, Employee> {
+public class CsvEmployeeProcess extends DoFn<String, Employee> {
 
 	private static final long serialVersionUID = 1462827258689031685L;
-	private static final Logger LOG = LoggerFactory.getLogger(EmployeeMsg.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CsvEmployeeProcess.class);
 	private CSVParser csvParser;
 	
 	@Setup
