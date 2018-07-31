@@ -17,6 +17,7 @@ import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.Count;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.commons.configuration2.Configuration;
@@ -65,7 +66,8 @@ public class StarterPipe {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		PCollection<String> lines = pipeline.apply(TextIO.read().from("gs://ristemp/employee.csv"));
+		PCollection<String> lines = pipeline.apply(TextIO.read().from("gs://ristemp/employee.csv"));		
+		
 		PCollection<Employee> empRows=lines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
 
 		//Convert messages into TableRow for BigQuery

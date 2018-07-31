@@ -89,7 +89,6 @@ public class StarterPipelineDb {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-
 		PCollection<TableRow> tableRows = pipeline.apply(readDBRows());
 
 		ArrayList<TableFieldSchema> fieldSchema = new ArrayList<TableFieldSchema>();

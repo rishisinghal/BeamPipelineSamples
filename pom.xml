@@ -6,33 +6,44 @@
 	<artifactId>samples</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<beam.version>2.5.0</beam.version>
+	</properties>
+
 	<dependencies>
 		<!-- Beam Core -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-core</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
 		</dependency>
 
 		<!-- Beam Extension -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-extensions-join-library</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-io-jdbc -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-io-jdbc</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.api-client</groupId>
+					<artifactId>google-api-client</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- For spanner -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.api.grpc</groupId>
@@ -41,18 +52,61 @@
 			</exclusions>
 		</dependency>
 
+		<!-- For GCS -->
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-storage</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-core</artifactId>
+			<version>1.36.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.23.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava-jdk5</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client</artifactId>
+			<version>1.23.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.http-client</groupId>
+			<artifactId>google-http-client-jackson2</artifactId>
+			<version>1.23.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax-grpc</artifactId>
+			<version>1.26.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.api</groupId>
+			<artifactId>gax</artifactId>
+			<version>1.26.0</version>
+		</dependency>
+
 		<!-- Local runner -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-runners-direct-java</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
 		</dependency>
 
 		<!-- DataFlow runner -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-runners-google-cloud-dataflow-java</artifactId>
-			<version>2.4.0</version>
+			<version>${beam.version}</version>
 		</dependency>
 
 		<!-- slf4j API frontend binding with JUL backend -->
@@ -117,13 +171,6 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.40</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
-		<dependency>
-			<groupId>com.google.api-client</groupId>
-			<artifactId>google-api-client</artifactId>
-			<version>1.22.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
