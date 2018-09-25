@@ -1,0 +1,10 @@
+{"namespace": "com.sample.beam.df.shared",
+ "type": "record",
+ "name": "EmpBadge",
+ "fields": [
+ 	 
+ 	 // initial  fields
+     {"name": "id",  			"type": ["int", "null"]},
+     {"name": "badgein",  		"type": ["int", "null"]}
+ ]
+}

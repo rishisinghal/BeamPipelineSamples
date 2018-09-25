@@ -10,10 +10,12 @@ package com.sample.beam.df;
 
 import java.sql.ResultSet;
 
+import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
 import org.apache.beam.runners.direct.DirectRunner;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.spanner.SpannerIO;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -30,14 +32,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.cloud.spanner.Mutation;
+import com.sample.beam.df.process.CsvEmployeeProcess;
 import com.sample.beam.df.process.SpannerDeptMsg;
 import com.sample.beam.df.process.SpannerEmployeeMsg;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineDbInterleaveSpanner {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineDbInterleaveSpanner.class);
+public class PipelineDbInterleaveSpanner {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineDbInterleaveSpanner.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
@@ -45,7 +48,7 @@ public class StarterPipelineDbInterleaveSpanner {
 
 	public static void main(String[] args) {
 
-		StarterPipelineDbInterleaveSpanner sp = new StarterPipelineDbInterleaveSpanner();		
+		PipelineDbInterleaveSpanner sp = new PipelineDbInterleaveSpanner();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -100,7 +103,11 @@ public class StarterPipelineDbInterleaveSpanner {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		PCollection<Employee> empColl = pipeline.apply(readDBRows());
+		// Uncomment to read from database
+//		PCollection<Employee> empColl = pipeline.apply(readDBRows());
+		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
+		PCollection<Employee> empColl=lines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
+		
 		PCollection<Mutation> empMut =  empColl.apply("Create Employee Mutation", ParDo.of(new SpannerEmployeeMsg()));
 		PCollection<Mutation> deptMut =  empColl.apply("Create Dept Mutation", ParDo.of(new SpannerDeptMsg()));
 
@@ -109,9 +116,9 @@ public class StarterPipelineDbInterleaveSpanner {
 				.withInstanceId(config.getString("spanner.instanceId"))
 				.withDatabaseId(config.getString("spanner.databaseId")));
 		
-		deptMut.apply("Write Dept details", SpannerIO.write()
-				.withInstanceId(config.getString("spanner.instanceId"))
-				.withDatabaseId(config.getString("spanner.databaseId")));
+//		deptMut.apply("Write Dept details", SpannerIO.write()
+//				.withInstanceId(config.getString("spanner.instanceId"))
+//				.withDatabaseId(config.getString("spanner.databaseId")));
 	}
 
 	public void init(String propFile)
@@ -135,7 +142,7 @@ public class StarterPipelineDbInterleaveSpanner {
 					"/"+config.getString("gcs.stagingLocation"));
 			options.setTempLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.tempLocation"));
-			//			options.setRunner(DataflowRunner.class);
+//			options.setRunner(DataflowRunner.class);
 			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));

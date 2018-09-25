@@ -50,15 +50,15 @@ import com.google.cloud.storage.StorageOptions;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineCsvSideInput {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineCsvSideInput.class);
+public class PipelineCsvSideInput {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineCsvSideInput.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelineCsvSideInput sp = new StarterPipelineCsvSideInput();		
+		PipelineCsvSideInput sp = new PipelineCsvSideInput();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file

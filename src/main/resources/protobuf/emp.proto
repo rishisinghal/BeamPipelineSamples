@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package tutorial;
+
+option java_package = "com.sample.beam.df.shared";
+option java_outer_classname = "EmpProtos";
+
+message Emp {
+  required int32 id = 1;
+  required string name = 2;
+}

@@ -101,7 +101,6 @@ public class StarterPipe {
 			options = PipelineOptionsFactory.create().as(DatabaseOptions.class);
 
 			// Set DataFlow options
-			options.setAppName("dataflow-app-test");
 			options.setStagingLocation("gs://rislabs/iot-dataflow/staging");
 			
 			String tempLocation = "gs://rislabs/iot-dataflow/temp";
@@ -115,7 +114,6 @@ public class StarterPipe {
 			options.setProject("training-sandbox-sgp");
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);
 			options.setMaxNumWorkers(1);
-			options.setJobName("testdf"+Utils.dateSecFormatter.format(new java.util.Date()));
 
 			// Set BigQuery options
 			options.setBQDatasetId("employee");

@@ -39,15 +39,15 @@ import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelineCsvAvro {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelineCsvAvro.class);
+public class PipelineCsvAvroBq {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineCsvAvroBq.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelineCsvAvro sp = new StarterPipelineCsvAvro();		
+		PipelineCsvAvroBq sp = new PipelineCsvAvroBq();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -111,8 +111,8 @@ public class StarterPipelineCsvAvro {
 			LOG.info("Temp location:"+tempLocation);
 			options.setTempLocation(tempLocation);
 
-			options.setRunner(DataflowRunner.class);
-			//			options.setRunner(DirectRunner.class);
+//			options.setRunner(DataflowRunner.class);
+			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);

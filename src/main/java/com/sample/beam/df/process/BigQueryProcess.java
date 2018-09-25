@@ -75,6 +75,9 @@ public class BigQueryProcess<T extends SpecificRecordBase> extends DoFn<T, Table
 		TableRow bqrow = new TableRow();
 		for(Field f : schema.getFields())
 		{
+			if(msg.get(f.name()) == null)
+					continue;
+					
 			if(bqrow.get(f.name()) instanceof org.joda.time.DateTime)
 				bqrow.set(f.name(), Utils.dateMsFormatter.print((DateTime)msg.get(f.name())));
 			else

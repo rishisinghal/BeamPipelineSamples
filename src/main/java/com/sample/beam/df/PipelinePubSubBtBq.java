@@ -38,15 +38,15 @@ import com.sample.beam.df.shared.DeviceTelemetry;
 import com.sample.beam.df.utils.TowerOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class StarterPipelinePubSub {
-	private static final Logger LOG = LoggerFactory.getLogger(StarterPipelinePubSub.class);
+public class PipelinePubSubBtBq {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelinePubSubBtBq.class);
 	private static final String DEFAULT_CONFIG_FILE = "application.properties";
 	private Configuration config;
 	private TowerOptions options;
 
 	public static void main(String[] args) {
 
-		StarterPipelinePubSub sp = new StarterPipelinePubSub();		
+		PipelinePubSubBtBq sp = new PipelinePubSubBtBq();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file read from cmd line
