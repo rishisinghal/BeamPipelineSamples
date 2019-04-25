@@ -77,7 +77,7 @@ public class StarterPipe {
 		tableRowsToWrite.apply("Write message into BigQuery",
 				BigQueryIO.writeTableRows()
 				.to("training-sandbox-sgp" + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
-				.withSchema(BigQueryEmployeeProcess.getSchema(Employee.getClassSchema()))
+				.withSchema(BigQueryEmployeeProcess.getTableSchema(Employee.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
 				);

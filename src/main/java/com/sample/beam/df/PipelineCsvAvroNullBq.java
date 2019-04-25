@@ -18,6 +18,7 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.Count;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.DoFn.ProcessContext;
+import org.apache.beam.sdk.transforms.DoFn.ProcessElement;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.ToString;
 import org.apache.beam.sdk.transforms.View;
@@ -35,19 +36,20 @@ import org.slf4j.LoggerFactory;
 import com.google.api.services.bigquery.model.TableRow;
 import com.sample.beam.df.process.BigQueryEmployeeProcess;
 import com.sample.beam.df.process.CsvEmployeeProcess;
+import com.sample.beam.df.process.FilterClass;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class PipelineCsvAvroBq {
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineCsvAvroBq.class);
+public class PipelineCsvAvroNullBq {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineCsvAvroNullBq.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		PipelineCsvAvroBq sp = new PipelineCsvAvroBq();		
+		PipelineCsvAvroNullBq sp = new PipelineCsvAvroNullBq();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -70,7 +72,9 @@ public class PipelineCsvAvroBq {
 	public void doDataProcessing(Pipeline pipeline)
 	{
 		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
-		PCollection<Employee> empRows=lines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
+		PCollection<String> filterLines =lines.apply(ParDo.of(new FilterClass()));
+
+		PCollection<Employee> empRows=filterLines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
 
 		//Convert messages into TableRow for BigQuery
 		PCollection<TableRow> tableRowsToWrite=empRows.apply("Table row conversion",ParDo.of(new BigQueryEmployeeProcess()));		
@@ -112,7 +116,7 @@ public class PipelineCsvAvroBq {
 			options.setTempLocation(tempLocation);
 
 			options.setRunner(DataflowRunner.class);
-//			options.setRunner(DirectRunner.class);
+			//			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);

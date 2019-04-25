@@ -10,8 +10,12 @@ package com.sample.beam.df;
 
 import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
+import org.apache.beam.runners.direct.DirectRunner;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
+import org.apache.beam.sdk.io.gcp.bigquery.InsertRetryPolicy;
+import org.apache.beam.sdk.io.gcp.bigquery.InsertRetryPolicy.Context;
+import org.apache.beam.sdk.io.gcp.bigquery.WriteResult;
 import org.apache.beam.sdk.io.gcp.bigtable.BigtableIO;
 import org.apache.beam.sdk.io.gcp.pubsub.PubsubIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -80,19 +84,19 @@ public class PipelinePubSubBtBq {
 		PCollection<KV<ByteString, Iterable<Mutation>>> mutations = deviceDataRows.apply("Table row conversion",ParDo.of(btTeleObj));
 
 		//Write into BigQuery
-		tableRowsToWrite.apply("Write message into BigQuery",
+		 WriteResult writeResult = tableRowsToWrite.apply("Write message into BigQuery",
 				BigQueryIO.writeTableRows()
 				.to(config.getString("gcp.projectId") + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
-				.withSchema(BigQueryTelemetryProcess.getSchema(DeviceTelemetry.getClassSchema()))
+				.withSchema(BigQueryTelemetryProcess.getTableSchema(DeviceTelemetry.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
 				);
-
+		 
 		//Write into BigTable	
-		mutations.apply("Write telemetry message to BigTable", 
-				BigtableIO.write()
-				.withBigtableOptions(optionsBuilder.build())
-				.withTableId(options.getBTTelemetryTableId()));
+//		mutations.apply("Write telemetry message to BigTable", 
+//				BigtableIO.write()
+//				.withBigtableOptions(optionsBuilder.build())
+//				.withTableId(options.getBTTelemetryTableId()));
 		
 		pipeline.run();
 	}
@@ -145,6 +149,8 @@ public class PipelinePubSubBtBq {
 					config.getString("bt.instanceId")));
 			options.setBTTelemetryTableId(config.getString("bt.telemetryTable"));
 			options.setBTColFamily(config.getString("bt.columnFamily"));
+			options.setWorkerDiskType("compute.googleapis.com/projects//zones//diskTypes/pd-ssd");
+
 		}
 		catch(ConfigurationException cex)
 		{

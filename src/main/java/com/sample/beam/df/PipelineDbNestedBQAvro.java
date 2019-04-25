@@ -26,6 +26,7 @@ import org.apache.beam.sdk.coders.CoderException;
 import org.apache.beam.sdk.coders.CoderRegistry;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.ListCoder;
+import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.io.gcp.bigquery.TableRowJsonCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
@@ -48,18 +49,23 @@ import org.slf4j.LoggerFactory;
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.api.services.bigquery.model.TableSchema;
+import com.sample.beam.df.process.BigQueryEmployeeProcess;
+import com.sample.beam.df.process.CsvEmpTableRowProcess;
+import com.sample.beam.df.process.CsvEmployeeProcess;
+import com.sample.beam.df.shared.Employee;
+import com.sample.beam.df.shared.EmployeeNested;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
 
-public class PipelineDbNestedBQ {
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineDbNestedBQ.class);
+public class PipelineDbNestedBQAvro {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineDbNestedBQAvro.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		PipelineDbNestedBQ sp = new PipelineDbNestedBQ();		
+		PipelineDbNestedBQAvro sp = new PipelineDbNestedBQAvro();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -114,31 +120,18 @@ public class PipelineDbNestedBQ {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
+		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
+		PCollection<KV<Integer, TableRow>> empMapColl=lines.apply("Convert",ParDo.of(new CsvEmpTableRowProcess()));
 
-		PCollection<KV<Integer, TableRow>> empMapColl = pipeline.apply(readDBRows());
+//		PCollection<KV<Integer, TableRow>> empMapColl = pipeline.apply(readDBRows());
 		PCollection<KV<Integer, TableRow>> groupedEmpDateColl = empMapColl.apply(Combine.perKey(new MergeDept()));
 		PCollection<TableRow> tableRows = groupedEmpDateColl.apply(ParDo.of(new ComputeRowFn()));
-
-		ArrayList<TableFieldSchema> fieldSchema = new ArrayList<TableFieldSchema>();
-		fieldSchema.add(new TableFieldSchema().setName("empId").setType("INTEGER"));
-		fieldSchema.add(new TableFieldSchema().setName("name").setType("STRING"));
-
-		fieldSchema.add(
-				new TableFieldSchema().setName("dept").setType("RECORD").setMode("REPEATED").setFields(new ArrayList<TableFieldSchema>() {
-					{
-						add(new TableFieldSchema().setName("deptno").setType("STRING").setMode("NULLABLE"));
-						add(new TableFieldSchema().setName("joindate").setType("DATE").setMode("NULLABLE"));
-					}
-				}));
-
-		TableSchema schema = new TableSchema();
-		schema.setFields(fieldSchema);
 
 		//Write into BigQuery
 		tableRows.apply("Write message into BigQuery",
 				BigQueryIO.writeTableRows()
 				.to(config.getString("gcp.projectId") + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
-				.withSchema(schema)
+				.withSchema(BigQueryEmployeeProcess.getTableSchema(EmployeeNested.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
 				);
@@ -250,8 +243,8 @@ public class PipelineDbNestedBQ {
 					"/"+config.getString("gcs.stagingLocation"));
 			options.setTempLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.tempLocation"));
-//			options.setRunner(DataflowRunner.class);
-			options.setRunner(DirectRunner.class);
+			options.setRunner(DataflowRunner.class);
+//			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);
