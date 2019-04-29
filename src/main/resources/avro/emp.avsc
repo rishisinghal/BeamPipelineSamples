@@ -1,0 +1,20 @@
+[{"namespace": "com.sample.beam.df.shared",
+ "type": "record",
+ "name": "EmpDept",
+ "fields": [ 	 
+     {"name": "deptno",	 		"type": ["string", "null"]},     
+     {"name": "joindate", 		"type":{"type": "int", "logicalType":"date"}}
+ ]
+},
+{"namespace": "com.sample.beam.df.shared",
+ "type": "record",
+ "name": "EmployeeNested",
+ "fields": [
+     {"name": "empId",  	"type": ["int", "null"]},
+     {"name": "name", 		"type": ["string", "null"]},
+     {"name": "dept", "type":["null", {
+     	"type": "array",
+     	"items":"com.sample.beam.df.shared.EmpDept"
+     	}], "default": null}	
+ ]
+}]
