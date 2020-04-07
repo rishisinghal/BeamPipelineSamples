@@ -24,7 +24,6 @@ public class CsvEmployeeProcess extends DoFn<String, Employee> {
 
 		try {
 			String[] parts = csvParser.parseLine(c.element());
-					
 			Employee emp = new Employee();
 			emp.setId(Integer.parseInt(parts[0]));
 			emp.setBday(Utils.dateformatter.parseLocalDate(parts[1]));

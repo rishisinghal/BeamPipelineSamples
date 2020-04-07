@@ -22,7 +22,8 @@ public class IoTTelemetryMsg extends DoFn<String, DeviceTelemetry> {
 
 		try {
 			DeviceTelemetry dt = dev.getTelemetryData(dataPacket);
-			LOG.info("DeviceTelemetry packet is:"+dt.toString());
+//			LOG.info("DeviceTelemetry packet is:"+dt.toString());
+			System.out.println("DeviceTelemetry packet is:"+dt.toString());
 			c.output(dt);
 		} catch(Exception e)
 		{

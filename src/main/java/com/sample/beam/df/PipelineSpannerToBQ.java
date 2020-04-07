@@ -1,14 +1,10 @@
-/**
- * ===========================================
- * The code is for DEMO purpose only and it is 
- * not intended to be put in production
- * ===========================================
- * 
- */
-
 package com.sample.beam.df;
 
 import java.sql.ResultSet;
+import java.util.Map;
+
+import com.google.cloud.spanner.Struct;
+
 
 import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
@@ -16,11 +12,16 @@ import org.apache.beam.runners.direct.DirectRunner;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.io.TextIO;
+import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.io.gcp.spanner.SpannerIO;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.transforms.Sample;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.PCollectionView;
+import org.apache.beam.sdk.values.TypeDescriptors;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -37,10 +38,13 @@ import com.sample.beam.df.process.SpannerDeptMsg;
 import com.sample.beam.df.process.SpannerEmployeeMsg;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
+import com.sample.beam.df.utils.StructToTableRowConverter;
 import com.sample.beam.df.utils.Utils;
+import org.apache.beam.sdk.transforms.View;
 
-public class PipelineDbInterleaveSpanner {
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineDbInterleaveSpanner.class);
+
+public class PipelineSpannerToBQ {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineSpannerToBQ.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
@@ -48,7 +52,7 @@ public class PipelineDbInterleaveSpanner {
 
 	public static void main(String[] args) {
 
-		PipelineDbInterleaveSpanner sp = new PipelineDbInterleaveSpanner();		
+		PipelineSpannerToBQ sp = new PipelineSpannerToBQ();		
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -68,57 +72,30 @@ public class PipelineDbInterleaveSpanner {
 		pipeline.run();
 	}
 
-	private static org.apache.beam.sdk.io.jdbc.JdbcIO.Read<Employee> readDBRows() {
-
-		return JdbcIO.<Employee>read()
-				.withDataSourceConfiguration(
-						JdbcIO.DataSourceConfiguration.create(config.getString("jdbc.driver"),config.getString("jdbc.url"))
-						.withUsername(config.getString("jdbc.user")))
-				.withQuery(config.getString("jdbc.query"))		
-				.withCoder(AvroCoder.of(Employee.class))
-				.withRowMapper(new JdbcIO.RowMapper<Employee>() {
-
-					public Employee mapRow(ResultSet resultSet) throws Exception {
-
-						Employee r = new Employee();
-						r.setId(resultSet.getInt(1));
-						r.setFirstName(resultSet.getString(2));
-
-						if(resultSet.getDate(3)==null)
-							r.setBday(LocalDate.parse(NULL_DATE));
-						else
-							r.setBday(new LocalDate(resultSet.getDate(3)));
-
-						r.setDept(resultSet.getString(4));
-						
-						if(resultSet.getDate(5)==null)
-							r.setHireDate(LocalDate.parse(NULL_DATE));
-						else 
-							r.setHireDate(new LocalDate(resultSet.getDate(5)));
-
-						return r;
-					}
-				});
-	}
-
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		// Uncomment to read from database
-//		PCollection<Employee> empColl = pipeline.apply(readDBRows());
-		PCollection<String> lines = pipeline.apply(TextIO.read().from(config.getString("csv.location")));
-		PCollection<Employee> empColl=lines.apply("Convert to Employee",ParDo.of(new CsvEmployeeProcess()));
-		
-		PCollection<Mutation> empMut =  empColl.apply("Create Employee Mutation", ParDo.of(new SpannerEmployeeMsg()));
-		PCollection<Mutation> deptMut =  empColl.apply("Create Dept Mutation", ParDo.of(new SpannerDeptMsg()));
+		   PCollection<Struct> rows = pipeline.apply(
+			        SpannerIO.read()
+			            .withInstanceId("spanner-test")
+			            .withDatabaseId("employeee")
+			            .withTable("emp")
+			            .withColumns("emp_id","birth_date","first_name"));
 
-		// Finally write the Mutations to Spanner
-		empMut.apply("Write Employee data", SpannerIO.write()
-				.withInstanceId(config.getString("spanner.instanceId"))
-				.withDatabaseId(config.getString("spanner.databaseId")));
-		
-//		deptMut.apply("Write Dept details", SpannerIO.write()
-//				.withInstanceId(config.getString("spanner.instanceId"))
-//				.withDatabaseId(config.getString("spanner.databaseId")));
+			    final PCollectionView<Map<String,String>> schemaView = rows
+			        .apply("SampleStruct", Sample.any(1))
+			        .apply("AsMap", MapElements
+			            .into(TypeDescriptors.maps(TypeDescriptors.strings(),TypeDescriptors.strings()))
+			            .via(struct -> StructToTableRowConverter.convertSchema("training-sandbox-sgp:employee.emp", struct)))
+			        .apply("AsView", View.asSingleton());
+
+			    rows.apply(
+			        "Write to BigQuery",
+			        BigQueryIO.<Struct>write()
+			            .to("training-sandbox-sgp:employee.emp")
+			            .withFormatFunction(StructToTableRowConverter::convert)
+			            .withSchemaFromView(schemaView)
+			            .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_TRUNCATE)
+			            .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED));
 	}
 
 	public void init(String propFile)
@@ -142,8 +119,8 @@ public class PipelineDbInterleaveSpanner {
 					"/"+config.getString("gcs.stagingLocation"));
 			options.setTempLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.tempLocation"));
-//			options.setRunner(DataflowRunner.class);
-			options.setRunner(DirectRunner.class);
+			options.setRunner(DataflowRunner.class);
+//			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);

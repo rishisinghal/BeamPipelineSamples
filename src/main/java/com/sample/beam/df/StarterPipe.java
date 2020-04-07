@@ -108,8 +108,8 @@ public class StarterPipe {
 			LOG.info("Temp location:"+tempLocation);
 			options.setTempLocation(tempLocation);
 			
-			options.setRunner(DataflowRunner.class);
-//			options.setRunner(DirectRunner.class);
+//			options.setRunner(DataflowRunner.class);
+			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject("training-sandbox-sgp");
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);

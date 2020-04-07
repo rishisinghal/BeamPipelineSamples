@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.api.services.bigquery.model.TableFieldSchema;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.api.services.bigquery.model.TableSchema;
+import com.sample.beam.df.shared.EmpDept;
 import com.sample.beam.df.utils.Utils;
 
 public class BigQueryProcess<T extends SpecificRecordBase> extends DoFn<T, TableRow> {
@@ -138,6 +139,7 @@ public class BigQueryProcess<T extends SpecificRecordBase> extends DoFn<T, Table
 
 		// LOG.info("msg is:"+msg);
 		TableRow bqrow = new TableRow();
+
 		for(Field f : schema.getFields())
 		{
 			if(msg.get(f.name()) == null)
@@ -147,14 +149,31 @@ public class BigQueryProcess<T extends SpecificRecordBase> extends DoFn<T, Table
 			{
 				//				LOG.info("f.name is:"+f.name());
 				bqrow.set(f.name(), Utils.dateMsFormatter.print((DateTime)msg.get(f.name())));
-			}
-			else
+			} 
+			else if(msg.get(f.name()) instanceof List)
+			{
+				List<TableRow> deptListRow = new ArrayList<TableRow>();
+				for(Object obj : (List)msg.get(f.name()))
+				{
+					TableRow deptr = createTableRow(f.schema(), (SpecificRecordBase)obj);
+					deptListRow.add(deptr);
+				}
+										
+//				List<EmpDept> deptList = (List<EmpDept>) msg.get(f.name());
+//				for(EmpDept dept:deptList)
+//				{
+//					TableRow deptr = new TableRow()
+//							.set("deptno", dept.deptno.toString())
+//							.set("joindate", dept.joindate.toString());
+//					deptListRow.add(deptr);
+//				}
+				bqrow.set(f.name(), deptListRow);				
+			} else
 			{
 				//				LOG.info("default f.name is:"+f.name());
 				bqrow.set(f.name(), msg.get(f.name()).toString());
 			}
 		}
-
 		return bqrow;
 	}
 }

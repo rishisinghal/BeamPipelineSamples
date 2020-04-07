@@ -18,7 +18,6 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.protobuf.ProtobufDatumReader;
-import org.apache.beam.repackaged.beam_sdks_java_core.org.apache.commons.compress.PasswordRequiredException;
 import org.apache.beam.runners.dataflow.DataflowRunner;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
 import org.apache.beam.runners.direct.DirectRunner;

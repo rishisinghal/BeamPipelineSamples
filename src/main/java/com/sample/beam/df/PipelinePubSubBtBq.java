@@ -93,15 +93,16 @@ public class PipelinePubSubBtBq {
 				);
 		 
 		//Write into BigTable	
-//		mutations.apply("Write telemetry message to BigTable", 
-//				BigtableIO.write()
-//				.withBigtableOptions(optionsBuilder.build())
-//				.withTableId(options.getBTTelemetryTableId()));
+		mutations.apply("Write telemetry message to BigTable",
+				BigtableIO.write()
+				.withBigtableOptions(optionsBuilder.build())
+				.withTableId(options.getBTTelemetryTableId()));
 		
 		pipeline.run();
 	}
 	
-	public PCollection<DeviceTelemetry> doTelemetryProcessing(BigtableOptions.Builder optionsBuilder, Pipeline pipeline, BigTableTelemetryProcess btTeleObj)
+	public PCollection<DeviceTelemetry> doTelemetryProcessing(BigtableOptions.Builder optionsBuilder, Pipeline pipeline,
+															  BigTableTelemetryProcess btTeleObj)
 	{
 		//read messages from Pub/Sub 
 		PCollection<String> pubSubTelemetryMsg=pipeline.apply("Read telemetry msg from PubSub",

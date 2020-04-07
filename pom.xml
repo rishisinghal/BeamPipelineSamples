@@ -8,7 +8,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<beam.version>2.11.0</beam.version>
+		<beam.version>2.18.0</beam.version>
+		<auto-value.version>1.7</auto-value.version>
 	</properties>
 
 	<dependencies>
@@ -59,8 +60,14 @@
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
 			<version>${beam.version}</version>
-			<!-- <exclusions> <exclusion> <groupId>com.google.api.grpc</groupId> <artifactId>grpc-google-common-protos</artifactId> 
-				</exclusion> </exclusions> -->
+			
+			<exclusions> 
+				<exclusion> 
+				<groupId>com.google.api.grpc</groupId> 
+				<artifactId>grpc-google-common-protos</artifactId> 
+				</exclusion> 
+			</exclusions> 
+				
 		</dependency>
 
 		<!-- For GCS -->
@@ -89,7 +96,7 @@
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>gax</artifactId>
-			<version>1.26.0</version>
+			<version>1.40.0</version>
 		</dependency>
 
 		<!-- Local runner -->
@@ -178,6 +185,25 @@
 			<version>4.2</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.auto.value</groupId>
+			<artifactId>auto-value-annotations</artifactId>
+			<version>${auto-value.version}</version>
+		</dependency>
+  <dependency>
+    <groupId>com.google.auto.value</groupId>
+    <artifactId>auto-value</artifactId>
+    <version>${auto-value.version}</version>
+    <optional>true</optional>
+  </dependency>
+
 	</dependencies>
 
 	<build>
@@ -189,6 +215,18 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>com.google.auto.value</groupId>
+							<artifactId>auto-value</artifactId>
+							<version>${auto-value.version}</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>

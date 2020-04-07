@@ -52,6 +52,7 @@ import com.google.api.services.bigquery.model.TableSchema;
 import com.sample.beam.df.process.BigQueryEmployeeProcess;
 import com.sample.beam.df.process.CsvEmpTableRowProcess;
 import com.sample.beam.df.process.CsvEmployeeProcess;
+import com.sample.beam.df.shared.EmpDept;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.shared.EmployeeNested;
 import com.sample.beam.df.utils.DatabaseOptions;
@@ -117,6 +118,13 @@ public class PipelineDbNestedBQAvro {
 			c.output(c.element().getValue());
 		}
 	}
+	
+	static class ComputeRowNestedFn extends DoFn<KV<Integer, EmployeeNested>, EmployeeNested> {
+		@ProcessElement
+		public void processElement(ProcessContext c) {
+			c.output(c.element().getValue());
+		}
+	}
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
@@ -124,16 +132,20 @@ public class PipelineDbNestedBQAvro {
 		PCollection<KV<Integer, TableRow>> empMapColl=lines.apply("Convert",ParDo.of(new CsvEmpTableRowProcess()));
 
 //		PCollection<KV<Integer, TableRow>> empMapColl = pipeline.apply(readDBRows());
-		PCollection<KV<Integer, TableRow>> groupedEmpDateColl = empMapColl.apply(Combine.perKey(new MergeDept()));
-		PCollection<TableRow> tableRows = groupedEmpDateColl.apply(ParDo.of(new ComputeRowFn()));
+//		PCollection<KV<Integer, TableRow>> groupedEmpDateColl = empMapColl.apply(Combine.perKey(new MergeDept()));
+//		PCollection<TableRow> tableRows = groupedEmpDateColl.apply(ParDo.of(new ComputeRowFn()));
 
+		PCollection<KV<Integer, EmployeeNested>> groupedEmpDateColl = empMapColl.apply(Combine.perKey(new MergeEmpDept()));
+		PCollection<EmployeeNested> tableRows = groupedEmpDateColl.apply(ParDo.of(new ComputeRowNestedFn()));
+		
 		//Write into BigQuery
 		tableRows.apply("Write message into BigQuery",
-				BigQueryIO.writeTableRows()
+				BigQueryIO.<EmployeeNested>write()
 				.to(config.getString("gcp.projectId") + ":" + options.getBQDatasetId() + "." + options.getBQTableName())
 				.withSchema(BigQueryEmployeeProcess.getTableSchema(EmployeeNested.getClassSchema()))
 				.withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
 				.withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
+				.withFormatFunction((EmployeeNested element) -> BigQueryEmployeeProcess.createTableRow(EmployeeNested.getClassSchema(),element))
 				);
 	}
 
@@ -222,6 +234,91 @@ public class PipelineDbNestedBQAvro {
 		}
 	}
 
+	public static class MergeEmpDept extends CombineFn<TableRow,  MergeEmpDept.Accum, EmployeeNested>  {
+
+		public static class Accum {
+			List<TableRow> empList;
+
+			public Accum() {
+				empList = new ArrayList<TableRow>();
+			}
+
+			public Accum(List<TableRow> empList) {
+				this.empList=empList;
+			}
+
+			public static Coder<Accum> getCoder() {
+				return new AtomicCoder<Accum>() {
+
+					@Override
+					public void encode(Accum value, OutputStream outStream) throws CoderException, IOException {
+						ListCoder.of(TableRowJsonCoder.of()).encode(value.empList, outStream);					
+					}
+
+					@Override
+					public Accum decode(InputStream inStream) throws CoderException, IOException {
+						List<TableRow> empList = ListCoder.of(TableRowJsonCoder.of()).decode(inStream);						
+						return new Accum(empList);
+					}					
+				};
+			}
+		}
+
+		@Override
+		public Coder<Accum> getAccumulatorCoder(CoderRegistry registry, Coder<TableRow> inputCoder) {
+			return Accum.getCoder();
+		}
+
+		@Override
+		public Accum createAccumulator() {
+			return new Accum();
+		}
+
+		@Override
+		public Accum addInput(Accum accumulator, TableRow input) {
+			accumulator.empList.add(input);
+			return accumulator;
+		}
+
+		@Override
+		public Accum mergeAccumulators(Iterable<Accum> accumulators) {
+			Accum merged = createAccumulator();
+			for (Accum accum : accumulators) {
+				for (TableRow r : accum.empList)
+				{
+					merged.empList.add(r);
+				}
+			}
+			return merged;
+		}
+
+		@Override
+		public EmployeeNested extractOutput(Accum accumulator) {
+			EmployeeNested r = null;
+			List<EmpDept> deptList = new ArrayList<>();
+
+			for(TableRow tr : accumulator.empList)
+			{
+				if(r==null)
+				{
+					r = new EmployeeNested();	
+					r.setEmpId((Integer)tr.get("empId"));				
+					r.setName(tr.get("name").toString());
+				}
+				
+				EmpDept dept = new EmpDept();
+				dept.setDeptno(tr.get("deptno").toString());
+				dept.setJoindate(Utils.dateformatter.parseLocalDate((String) tr.get("joindate")));
+				
+				deptList.add(dept);
+			}
+
+			r.setDept(deptList);
+			return r;
+		}
+	}
+
+	
 	public void init(String propFile)
 	{
 		Parameters params = new Parameters();
@@ -243,8 +340,8 @@ public class PipelineDbNestedBQAvro {
 					"/"+config.getString("gcs.stagingLocation"));
 			options.setTempLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.tempLocation"));
-			options.setRunner(DataflowRunner.class);
-//			options.setRunner(DirectRunner.class);
+//			options.setRunner(DataflowRunner.class);
+			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);
