@@ -1,6 +1,7 @@
 package com.sample.beam.df;
 
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.Map;
 
 import com.google.cloud.spanner.Struct;
@@ -16,6 +17,8 @@ import org.apache.beam.sdk.io.gcp.bigquery.BigQueryIO;
 import org.apache.beam.sdk.io.gcp.spanner.SpannerIO;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.options.ValueProvider;
+import org.apache.beam.sdk.options.ValueProvider.StaticValueProvider;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.Sample;
@@ -38,6 +41,7 @@ import com.sample.beam.df.process.SpannerDeptMsg;
 import com.sample.beam.df.process.SpannerEmployeeMsg;
 import com.sample.beam.df.shared.Employee;
 import com.sample.beam.df.utils.DatabaseOptions;
+import com.sample.beam.df.utils.SpannerToBQOptions;
 import com.sample.beam.df.utils.StructToTableRowConverter;
 import com.sample.beam.df.utils.Utils;
 import org.apache.beam.sdk.transforms.View;
@@ -47,7 +51,7 @@ public class PipelineSpannerToBQ {
 	private static final Logger LOG = LoggerFactory.getLogger(PipelineSpannerToBQ.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
-	private DatabaseOptions options;
+	private SpannerToBQOptions options;
 	private static final String NULL_DATE = "1950-01-01";
 
 	public static void main(String[] args) {
@@ -74,24 +78,25 @@ public class PipelineSpannerToBQ {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		   PCollection<Struct> rows = pipeline.apply(
+		 final String bqTarget = options.getProject()+":"+options.getBQDatasetId()+"."+options.getBQTableName();
+		 PCollection<Struct> rows = pipeline.apply(
 			        SpannerIO.read()
-			            .withInstanceId("spanner-test")
-			            .withDatabaseId("employeee")
-			            .withTable("emp")
-			            .withColumns("emp_id","birth_date","first_name"));
+			            .withInstanceId(config.getString("spanner.instanceId"))
+			            .withDatabaseId(config.getString("spanner.databaseId"))
+			            .withTable(config.getString("spanner.table"))			         
+			            .withColumns(Arrays.asList(config.getString("spanner.columns").split(","))));
 
 			    final PCollectionView<Map<String,String>> schemaView = rows
 			        .apply("SampleStruct", Sample.any(1))
 			        .apply("AsMap", MapElements
 			            .into(TypeDescriptors.maps(TypeDescriptors.strings(),TypeDescriptors.strings()))
-			            .via(struct -> StructToTableRowConverter.convertSchema("training-sandbox-sgp:employee.emp", struct)))
+			            .via(struct -> StructToTableRowConverter.convertSchema(bqTarget, struct)))
 			        .apply("AsView", View.asSingleton());
 
 			    rows.apply(
 			        "Write to BigQuery",
 			        BigQueryIO.<Struct>write()
-			            .to("training-sandbox-sgp:employee.emp")
+					.to(bqTarget)
 			            .withFormatFunction(StructToTableRowConverter::convert)
 			            .withSchemaFromView(schemaView)
 			            .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_TRUNCATE)
@@ -111,7 +116,7 @@ public class PipelineSpannerToBQ {
 			config = builder.getConfiguration();
 
 			//define pipeline options
-			options = PipelineOptionsFactory.create().as(DatabaseOptions.class);
+			options = PipelineOptionsFactory.create().as(SpannerToBQOptions.class);
 
 			// Set DataFlow options
 			options.setAppName(config.getString("df.appName"));
@@ -126,6 +131,14 @@ public class PipelineSpannerToBQ {
 			options.setAutoscalingAlgorithm(AutoscalingAlgorithmType.THROUGHPUT_BASED);
 			options.setMaxNumWorkers(config.getInt("df.maxWorkers"));
 			options.setJobName(config.getString("df.baseJobName")+Utils.dateSecFormatter.format(new java.util.Date()));
+			
+			options.setSpannerInstanceId(config.getString("spanner.instanceId"));
+			options.setSpannerDatabaseId(config.getString("spanner.databaseId"));
+			options.setSpannerTable(config.getString("spanner.table"));
+			options.setSpannerColumns(config.getString("spanner.columns"));
+			
+			options.setBQDatasetId(config.getString("bq.datasetId"));
+			options.setBQTableName(config.getString("bq.empTable"));
 		}
 		catch(ConfigurationException cex)
 		{
