@@ -75,7 +75,7 @@ public class PipelinePubsubSpanner {
 	{
 		//read messages from Pub/Sub 
 		PCollection<String> lines=pipeline.apply("Read msg from PubSub",
-				PubsubIO.readStrings().fromSubscription(config.getString("pubsub.subscription.spanner")));
+				PubsubIO.readStrings().fromSubscription(config.getString("pubsub.subscription")));
 
 		PCollection<KV<String, Integer>> lKey=lines.apply(ParDo.of(new LinesKey()));
 

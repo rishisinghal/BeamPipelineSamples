@@ -1,9 +1,9 @@
 /**
  * ===========================================
- * The code is for DEMO purpose only and it is 
+ * The code is for DEMO purpose only and it is
  * not intended to be put in production
  * ===========================================
- * 
+ *
  */
 
 package com.sample.beam.df;
@@ -34,12 +34,10 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.mortbay.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.GeneratedMessageV3;
 import com.sample.beam.df.shared.EmpProtos.Emp;
 import com.sample.beam.df.utils.DatabaseOptions;
 import com.sample.beam.df.utils.Utils;
@@ -52,7 +50,7 @@ public class PipelineProtobufParquet {
 
 	public static void main(String[] args) {
 
-		PipelineProtobufParquet sp = new PipelineProtobufParquet();		
+		PipelineProtobufParquet sp = new PipelineProtobufParquet();
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -61,7 +59,7 @@ public class PipelineProtobufParquet {
 			propFile = DEFAULT_CONFIG_FILE;
 
 		sp.init(propFile);
-		sp.run();		
+		sp.run();
 	}
 
 	public void run()
@@ -75,9 +73,9 @@ public class PipelineProtobufParquet {
 	public void doDataProcessing(Pipeline pipeline)
 	{
 		PCollection<Metadata> matches = pipeline.apply(FileIO.match().filepattern(config.getString("protofile.location")));
-		PCollection<FileIO.ReadableFile> decompressedAuto = matches.apply("Read File", 
+		PCollection<FileIO.ReadableFile> decompressedAuto = matches.apply("Read File",
 				FileIO.readMatches().withCompression(Compression.AUTO));
-		
+
 		ProtobufDatumReader<Emp> datumReader = new ProtobufDatumReader<Emp>(Emp.class);
 		Schema schema = datumReader.getSchema();
 		PCollection<GenericRecord> empRows = decompressedAuto.apply("Convert to GenRecord",ParDo.of(new ReadableFileToGenRecordsFn(schema)));
@@ -99,10 +97,10 @@ public class PipelineProtobufParquet {
 
 		@ProcessElement
 		public void processElement(ProcessContext c) throws IOException {
-			
-			Emp e = Emp.parseFrom(c.element().readFullyAsBytes()); 
-			Log.info("Start convert:"+e.toString());
-			
+
+			Emp e = Emp.parseFrom(c.element().readFullyAsBytes());
+			LOG.info("Start convert:"+e.toString());
+
 			GenericRecordBuilder builder=new GenericRecordBuilder(schema);
 
 			for(Map.Entry<FieldDescriptor,Object> entry : e.getAllFields().entrySet())
@@ -131,10 +129,10 @@ public class PipelineProtobufParquet {
 
 			// Set DataFlow options
 			options.setAppName(config.getString("df.appName"));
-			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
+			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") +
 					"/"+config.getString("gcs.stagingLocation"));
 
-			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
+			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") +
 					"/"+config.getString("gcs.tempLocation");
 
 			LOG.info("Temp location:"+tempLocation);

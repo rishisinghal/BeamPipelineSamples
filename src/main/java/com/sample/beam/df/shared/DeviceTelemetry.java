@@ -6,6 +6,9 @@
 package com.sample.beam.df.shared;
 
 import org.apache.avro.specific.SpecificData;
+import org.apache.avro.message.BinaryMessageEncoder;
+import org.apache.avro.message.BinaryMessageDecoder;
+import org.apache.avro.message.SchemaStore;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
@@ -13,6 +16,41 @@ public class DeviceTelemetry extends org.apache.avro.specific.SpecificRecordBase
   private static final long serialVersionUID = 71424923275312244L;
   public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"DeviceTelemetry\",\"namespace\":\"com.sample.beam.df.shared\",\"fields\":[{\"name\":\"faultPeriodic\",\"type\":[\"string\",\"null\"]},{\"name\":\"commMode\",\"type\":[\"string\",\"null\"]},{\"name\":\"swVersion\",\"type\":[\"string\",\"null\"]},{\"name\":\"protVersion\",\"type\":[\"string\",\"null\"]},{\"name\":\"serialNo\",\"type\":[\"string\",\"null\"]},{\"name\":\"dataBytes\",\"type\":[\"int\",\"null\"]},{\"name\":\"siteId\",\"type\":[\"string\",\"null\"]},{\"name\":\"timestamp\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"alarm\",\"type\":[\"string\",\"null\"]},{\"name\":\"status\",\"type\":[\"string\",\"null\"]},{\"name\":\"rectifierPower\",\"type\":[\"float\",\"null\"]},{\"name\":\"rectifierVolt\",\"type\":[\"float\",\"null\"]},{\"name\":\"battCapacity\",\"type\":[\"float\",\"null\"]},{\"name\":\"battCurrent\",\"type\":[\"int\",\"null\"]},{\"name\":\"rectCurrent\",\"type\":[\"float\",\"null\"]},{\"name\":\"solCurrent\",\"type\":[\"float\",\"null\"]},{\"name\":\"windCurrent\",\"type\":[\"float\",\"null\"]},{\"name\":\"battVolDc\",\"type\":[\"float\",\"null\"]},{\"name\":\"totLoadCurr\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr1\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr2\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr3\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr4\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr5\",\"type\":[\"float\",\"null\"]},{\"name\":\"loadCurr6\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainVolR\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainVolY\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainVolB\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainCurrRY\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainCurrYB\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainCurrBR\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainFreq\",\"type\":[\"float\",\"null\"]},{\"name\":\"genVolR\",\"type\":[\"float\",\"null\"]},{\"name\":\"genVolY\",\"type\":[\"float\",\"null\"]},{\"name\":\"genVolB\",\"type\":[\"float\",\"null\"]},{\"name\":\"genCurrR\",\"type\":[\"float\",\"null\"]},{\"name\":\"genCurrY\",\"type\":[\"float\",\"null\"]},{\"name\":\"genCurrB\",\"type\":[\"float\",\"null\"]},{\"name\":\"genFreq\",\"type\":[\"float\",\"null\"]},{\"name\":\"genPower\",\"type\":[\"float\",\"null\"]},{\"name\":\"svrVol\",\"type\":[\"float\",\"null\"]},{\"name\":\"svrCurr\",\"type\":[\"float\",\"null\"]},{\"name\":\"battDod\",\"type\":[\"float\",\"null\"]},{\"name\":\"battSoc\",\"type\":[\"float\",\"null\"]},{\"name\":\"shelRoomTemp\",\"type\":[\"float\",\"null\"]},{\"name\":\"shelBattTemp\",\"type\":[\"float\",\"null\"]},{\"name\":\"genFuel\",\"type\":[\"float\",\"null\"]},{\"name\":\"genBattVol\",\"type\":[\"float\",\"null\"]},{\"name\":\"mainRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"dgTotRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"dgAutoRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"dgManRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"battRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"solRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"windRunHrs\",\"type\":[\"float\",\"null\"]},{\"name\":\"battChgCycCnt\",\"type\":[\"float\",\"null\"]},{\"name\":\"battDisChgCycCnt\",\"type\":[\"float\",\"null\"]},{\"name\":\"totRectEnergy\",\"type\":[\"float\",\"null\"]},{\"name\":\"ipMainKwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"dgEnerKwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"battEnerKwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"solEnerKwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"winEnerKwn\",\"type\":[\"float\",\"null\"]},{\"name\":\"load1Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"load2Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"load3Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"load4Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"load5Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"load6Kwh\",\"type\":[\"float\",\"null\"]},{\"name\":\"totLoadEnergy\",\"type\":[\"float\",\"null\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
+
+  private static SpecificData MODEL$ = new SpecificData();
+
+  private static final BinaryMessageEncoder<DeviceTelemetry> ENCODER =
+      new BinaryMessageEncoder<DeviceTelemetry>(MODEL$, SCHEMA$);
+
+  private static final BinaryMessageDecoder<DeviceTelemetry> DECODER =
+      new BinaryMessageDecoder<DeviceTelemetry>(MODEL$, SCHEMA$);
+
+  /**
+   * Return the BinaryMessageDecoder instance used by this class.
+   */
+  public static BinaryMessageDecoder<DeviceTelemetry> getDecoder() {
+    return DECODER;
+  }
+
+  /**
+   * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
+   * @param resolver a {@link SchemaStore} used to find schemas by fingerprint
+   */
+  public static BinaryMessageDecoder<DeviceTelemetry> createDecoder(SchemaStore resolver) {
+    return new BinaryMessageDecoder<DeviceTelemetry>(MODEL$, SCHEMA$, resolver);
+  }
+
+  /** Serializes this DeviceTelemetry to a ByteBuffer. */
+  public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
+    return ENCODER.encode(this);
+  }
+
+  /** Deserializes a DeviceTelemetry from a ByteBuffer. */
+  public static DeviceTelemetry fromByteBuffer(
+      java.nio.ByteBuffer b) throws java.io.IOException {
+    return DECODER.decode(b);
+  }
+
   @Deprecated public java.lang.CharSequence faultPeriodic;
   @Deprecated public java.lang.CharSequence commMode;
   @Deprecated public java.lang.CharSequence swVersion;
@@ -318,8 +356,9 @@ public class DeviceTelemetry extends org.apache.avro.specific.SpecificRecordBase
   protected static final org.apache.avro.data.TimeConversions.DateConversion DATE_CONVERSION = new org.apache.avro.data.TimeConversions.DateConversion();
   protected static final org.apache.avro.data.TimeConversions.TimeConversion TIME_CONVERSION = new org.apache.avro.data.TimeConversions.TimeConversion();
   protected static final org.apache.avro.data.TimeConversions.TimestampConversion TIMESTAMP_CONVERSION = new org.apache.avro.data.TimeConversions.TimestampConversion();
+  protected static final org.apache.avro.Conversions.DecimalConversion DECIMAL_CONVERSION = new org.apache.avro.Conversions.DecimalConversion();
 
-  private final org.apache.avro.Conversion<?>[] conversions =
+  private static final org.apache.avro.Conversion<?>[] conversions =
       new org.apache.avro.Conversion<?>[] {
       null,
       null,
@@ -5011,96 +5050,99 @@ public class DeviceTelemetry extends org.apache.avro.specific.SpecificRecordBase
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DeviceTelemetry build() {
       try {
         DeviceTelemetry record = new DeviceTelemetry();
-        record.faultPeriodic = fieldSetFlags()[0] ? this.faultPeriodic : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.commMode = fieldSetFlags()[1] ? this.commMode : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.swVersion = fieldSetFlags()[2] ? this.swVersion : (java.lang.CharSequence) defaultValue(fields()[2]);
-        record.protVersion = fieldSetFlags()[3] ? this.protVersion : (java.lang.CharSequence) defaultValue(fields()[3]);
-        record.serialNo = fieldSetFlags()[4] ? this.serialNo : (java.lang.CharSequence) defaultValue(fields()[4]);
-        record.dataBytes = fieldSetFlags()[5] ? this.dataBytes : (java.lang.Integer) defaultValue(fields()[5]);
-        record.siteId = fieldSetFlags()[6] ? this.siteId : (java.lang.CharSequence) defaultValue(fields()[6]);
-        record.timestamp = fieldSetFlags()[7] ? this.timestamp : (org.joda.time.DateTime) defaultValue(fields()[7]);
-        record.alarm = fieldSetFlags()[8] ? this.alarm : (java.lang.CharSequence) defaultValue(fields()[8]);
-        record.status = fieldSetFlags()[9] ? this.status : (java.lang.CharSequence) defaultValue(fields()[9]);
-        record.rectifierPower = fieldSetFlags()[10] ? this.rectifierPower : (java.lang.Float) defaultValue(fields()[10]);
-        record.rectifierVolt = fieldSetFlags()[11] ? this.rectifierVolt : (java.lang.Float) defaultValue(fields()[11]);
-        record.battCapacity = fieldSetFlags()[12] ? this.battCapacity : (java.lang.Float) defaultValue(fields()[12]);
-        record.battCurrent = fieldSetFlags()[13] ? this.battCurrent : (java.lang.Integer) defaultValue(fields()[13]);
-        record.rectCurrent = fieldSetFlags()[14] ? this.rectCurrent : (java.lang.Float) defaultValue(fields()[14]);
-        record.solCurrent = fieldSetFlags()[15] ? this.solCurrent : (java.lang.Float) defaultValue(fields()[15]);
-        record.windCurrent = fieldSetFlags()[16] ? this.windCurrent : (java.lang.Float) defaultValue(fields()[16]);
-        record.battVolDc = fieldSetFlags()[17] ? this.battVolDc : (java.lang.Float) defaultValue(fields()[17]);
-        record.totLoadCurr = fieldSetFlags()[18] ? this.totLoadCurr : (java.lang.Float) defaultValue(fields()[18]);
-        record.loadCurr1 = fieldSetFlags()[19] ? this.loadCurr1 : (java.lang.Float) defaultValue(fields()[19]);
-        record.loadCurr2 = fieldSetFlags()[20] ? this.loadCurr2 : (java.lang.Float) defaultValue(fields()[20]);
-        record.loadCurr3 = fieldSetFlags()[21] ? this.loadCurr3 : (java.lang.Float) defaultValue(fields()[21]);
-        record.loadCurr4 = fieldSetFlags()[22] ? this.loadCurr4 : (java.lang.Float) defaultValue(fields()[22]);
-        record.loadCurr5 = fieldSetFlags()[23] ? this.loadCurr5 : (java.lang.Float) defaultValue(fields()[23]);
-        record.loadCurr6 = fieldSetFlags()[24] ? this.loadCurr6 : (java.lang.Float) defaultValue(fields()[24]);
-        record.mainVolR = fieldSetFlags()[25] ? this.mainVolR : (java.lang.Float) defaultValue(fields()[25]);
-        record.mainVolY = fieldSetFlags()[26] ? this.mainVolY : (java.lang.Float) defaultValue(fields()[26]);
-        record.mainVolB = fieldSetFlags()[27] ? this.mainVolB : (java.lang.Float) defaultValue(fields()[27]);
-        record.mainCurrRY = fieldSetFlags()[28] ? this.mainCurrRY : (java.lang.Float) defaultValue(fields()[28]);
-        record.mainCurrYB = fieldSetFlags()[29] ? this.mainCurrYB : (java.lang.Float) defaultValue(fields()[29]);
-        record.mainCurrBR = fieldSetFlags()[30] ? this.mainCurrBR : (java.lang.Float) defaultValue(fields()[30]);
-        record.mainFreq = fieldSetFlags()[31] ? this.mainFreq : (java.lang.Float) defaultValue(fields()[31]);
-        record.genVolR = fieldSetFlags()[32] ? this.genVolR : (java.lang.Float) defaultValue(fields()[32]);
-        record.genVolY = fieldSetFlags()[33] ? this.genVolY : (java.lang.Float) defaultValue(fields()[33]);
-        record.genVolB = fieldSetFlags()[34] ? this.genVolB : (java.lang.Float) defaultValue(fields()[34]);
-        record.genCurrR = fieldSetFlags()[35] ? this.genCurrR : (java.lang.Float) defaultValue(fields()[35]);
-        record.genCurrY = fieldSetFlags()[36] ? this.genCurrY : (java.lang.Float) defaultValue(fields()[36]);
-        record.genCurrB = fieldSetFlags()[37] ? this.genCurrB : (java.lang.Float) defaultValue(fields()[37]);
-        record.genFreq = fieldSetFlags()[38] ? this.genFreq : (java.lang.Float) defaultValue(fields()[38]);
-        record.genPower = fieldSetFlags()[39] ? this.genPower : (java.lang.Float) defaultValue(fields()[39]);
-        record.svrVol = fieldSetFlags()[40] ? this.svrVol : (java.lang.Float) defaultValue(fields()[40]);
-        record.svrCurr = fieldSetFlags()[41] ? this.svrCurr : (java.lang.Float) defaultValue(fields()[41]);
-        record.battDod = fieldSetFlags()[42] ? this.battDod : (java.lang.Float) defaultValue(fields()[42]);
-        record.battSoc = fieldSetFlags()[43] ? this.battSoc : (java.lang.Float) defaultValue(fields()[43]);
-        record.shelRoomTemp = fieldSetFlags()[44] ? this.shelRoomTemp : (java.lang.Float) defaultValue(fields()[44]);
-        record.shelBattTemp = fieldSetFlags()[45] ? this.shelBattTemp : (java.lang.Float) defaultValue(fields()[45]);
-        record.genFuel = fieldSetFlags()[46] ? this.genFuel : (java.lang.Float) defaultValue(fields()[46]);
-        record.genBattVol = fieldSetFlags()[47] ? this.genBattVol : (java.lang.Float) defaultValue(fields()[47]);
-        record.mainRunHrs = fieldSetFlags()[48] ? this.mainRunHrs : (java.lang.Float) defaultValue(fields()[48]);
-        record.dgTotRunHrs = fieldSetFlags()[49] ? this.dgTotRunHrs : (java.lang.Float) defaultValue(fields()[49]);
-        record.dgAutoRunHrs = fieldSetFlags()[50] ? this.dgAutoRunHrs : (java.lang.Float) defaultValue(fields()[50]);
-        record.dgManRunHrs = fieldSetFlags()[51] ? this.dgManRunHrs : (java.lang.Float) defaultValue(fields()[51]);
-        record.battRunHrs = fieldSetFlags()[52] ? this.battRunHrs : (java.lang.Float) defaultValue(fields()[52]);
-        record.solRunHrs = fieldSetFlags()[53] ? this.solRunHrs : (java.lang.Float) defaultValue(fields()[53]);
-        record.windRunHrs = fieldSetFlags()[54] ? this.windRunHrs : (java.lang.Float) defaultValue(fields()[54]);
-        record.battChgCycCnt = fieldSetFlags()[55] ? this.battChgCycCnt : (java.lang.Float) defaultValue(fields()[55]);
-        record.battDisChgCycCnt = fieldSetFlags()[56] ? this.battDisChgCycCnt : (java.lang.Float) defaultValue(fields()[56]);
-        record.totRectEnergy = fieldSetFlags()[57] ? this.totRectEnergy : (java.lang.Float) defaultValue(fields()[57]);
-        record.ipMainKwh = fieldSetFlags()[58] ? this.ipMainKwh : (java.lang.Float) defaultValue(fields()[58]);
-        record.dgEnerKwh = fieldSetFlags()[59] ? this.dgEnerKwh : (java.lang.Float) defaultValue(fields()[59]);
-        record.battEnerKwh = fieldSetFlags()[60] ? this.battEnerKwh : (java.lang.Float) defaultValue(fields()[60]);
-        record.solEnerKwh = fieldSetFlags()[61] ? this.solEnerKwh : (java.lang.Float) defaultValue(fields()[61]);
-        record.winEnerKwn = fieldSetFlags()[62] ? this.winEnerKwn : (java.lang.Float) defaultValue(fields()[62]);
-        record.load1Kwh = fieldSetFlags()[63] ? this.load1Kwh : (java.lang.Float) defaultValue(fields()[63]);
-        record.load2Kwh = fieldSetFlags()[64] ? this.load2Kwh : (java.lang.Float) defaultValue(fields()[64]);
-        record.load3Kwh = fieldSetFlags()[65] ? this.load3Kwh : (java.lang.Float) defaultValue(fields()[65]);
-        record.load4Kwh = fieldSetFlags()[66] ? this.load4Kwh : (java.lang.Float) defaultValue(fields()[66]);
-        record.load5Kwh = fieldSetFlags()[67] ? this.load5Kwh : (java.lang.Float) defaultValue(fields()[67]);
-        record.load6Kwh = fieldSetFlags()[68] ? this.load6Kwh : (java.lang.Float) defaultValue(fields()[68]);
-        record.totLoadEnergy = fieldSetFlags()[69] ? this.totLoadEnergy : (java.lang.Float) defaultValue(fields()[69]);
+        record.faultPeriodic = fieldSetFlags()[0] ? this.faultPeriodic : (java.lang.CharSequence) defaultValue(fields()[0], record.getConversion(0));
+        record.commMode = fieldSetFlags()[1] ? this.commMode : (java.lang.CharSequence) defaultValue(fields()[1], record.getConversion(1));
+        record.swVersion = fieldSetFlags()[2] ? this.swVersion : (java.lang.CharSequence) defaultValue(fields()[2], record.getConversion(2));
+        record.protVersion = fieldSetFlags()[3] ? this.protVersion : (java.lang.CharSequence) defaultValue(fields()[3], record.getConversion(3));
+        record.serialNo = fieldSetFlags()[4] ? this.serialNo : (java.lang.CharSequence) defaultValue(fields()[4], record.getConversion(4));
+        record.dataBytes = fieldSetFlags()[5] ? this.dataBytes : (java.lang.Integer) defaultValue(fields()[5], record.getConversion(5));
+        record.siteId = fieldSetFlags()[6] ? this.siteId : (java.lang.CharSequence) defaultValue(fields()[6], record.getConversion(6));
+        record.timestamp = fieldSetFlags()[7] ? this.timestamp : (org.joda.time.DateTime) defaultValue(fields()[7], record.getConversion(7));
+        record.alarm = fieldSetFlags()[8] ? this.alarm : (java.lang.CharSequence) defaultValue(fields()[8], record.getConversion(8));
+        record.status = fieldSetFlags()[9] ? this.status : (java.lang.CharSequence) defaultValue(fields()[9], record.getConversion(9));
+        record.rectifierPower = fieldSetFlags()[10] ? this.rectifierPower : (java.lang.Float) defaultValue(fields()[10], record.getConversion(10));
+        record.rectifierVolt = fieldSetFlags()[11] ? this.rectifierVolt : (java.lang.Float) defaultValue(fields()[11], record.getConversion(11));
+        record.battCapacity = fieldSetFlags()[12] ? this.battCapacity : (java.lang.Float) defaultValue(fields()[12], record.getConversion(12));
+        record.battCurrent = fieldSetFlags()[13] ? this.battCurrent : (java.lang.Integer) defaultValue(fields()[13], record.getConversion(13));
+        record.rectCurrent = fieldSetFlags()[14] ? this.rectCurrent : (java.lang.Float) defaultValue(fields()[14], record.getConversion(14));
+        record.solCurrent = fieldSetFlags()[15] ? this.solCurrent : (java.lang.Float) defaultValue(fields()[15], record.getConversion(15));
+        record.windCurrent = fieldSetFlags()[16] ? this.windCurrent : (java.lang.Float) defaultValue(fields()[16], record.getConversion(16));
+        record.battVolDc = fieldSetFlags()[17] ? this.battVolDc : (java.lang.Float) defaultValue(fields()[17], record.getConversion(17));
+        record.totLoadCurr = fieldSetFlags()[18] ? this.totLoadCurr : (java.lang.Float) defaultValue(fields()[18], record.getConversion(18));
+        record.loadCurr1 = fieldSetFlags()[19] ? this.loadCurr1 : (java.lang.Float) defaultValue(fields()[19], record.getConversion(19));
+        record.loadCurr2 = fieldSetFlags()[20] ? this.loadCurr2 : (java.lang.Float) defaultValue(fields()[20], record.getConversion(20));
+        record.loadCurr3 = fieldSetFlags()[21] ? this.loadCurr3 : (java.lang.Float) defaultValue(fields()[21], record.getConversion(21));
+        record.loadCurr4 = fieldSetFlags()[22] ? this.loadCurr4 : (java.lang.Float) defaultValue(fields()[22], record.getConversion(22));
+        record.loadCurr5 = fieldSetFlags()[23] ? this.loadCurr5 : (java.lang.Float) defaultValue(fields()[23], record.getConversion(23));
+        record.loadCurr6 = fieldSetFlags()[24] ? this.loadCurr6 : (java.lang.Float) defaultValue(fields()[24], record.getConversion(24));
+        record.mainVolR = fieldSetFlags()[25] ? this.mainVolR : (java.lang.Float) defaultValue(fields()[25], record.getConversion(25));
+        record.mainVolY = fieldSetFlags()[26] ? this.mainVolY : (java.lang.Float) defaultValue(fields()[26], record.getConversion(26));
+        record.mainVolB = fieldSetFlags()[27] ? this.mainVolB : (java.lang.Float) defaultValue(fields()[27], record.getConversion(27));
+        record.mainCurrRY = fieldSetFlags()[28] ? this.mainCurrRY : (java.lang.Float) defaultValue(fields()[28], record.getConversion(28));
+        record.mainCurrYB = fieldSetFlags()[29] ? this.mainCurrYB : (java.lang.Float) defaultValue(fields()[29], record.getConversion(29));
+        record.mainCurrBR = fieldSetFlags()[30] ? this.mainCurrBR : (java.lang.Float) defaultValue(fields()[30], record.getConversion(30));
+        record.mainFreq = fieldSetFlags()[31] ? this.mainFreq : (java.lang.Float) defaultValue(fields()[31], record.getConversion(31));
+        record.genVolR = fieldSetFlags()[32] ? this.genVolR : (java.lang.Float) defaultValue(fields()[32], record.getConversion(32));
+        record.genVolY = fieldSetFlags()[33] ? this.genVolY : (java.lang.Float) defaultValue(fields()[33], record.getConversion(33));
+        record.genVolB = fieldSetFlags()[34] ? this.genVolB : (java.lang.Float) defaultValue(fields()[34], record.getConversion(34));
+        record.genCurrR = fieldSetFlags()[35] ? this.genCurrR : (java.lang.Float) defaultValue(fields()[35], record.getConversion(35));
+        record.genCurrY = fieldSetFlags()[36] ? this.genCurrY : (java.lang.Float) defaultValue(fields()[36], record.getConversion(36));
+        record.genCurrB = fieldSetFlags()[37] ? this.genCurrB : (java.lang.Float) defaultValue(fields()[37], record.getConversion(37));
+        record.genFreq = fieldSetFlags()[38] ? this.genFreq : (java.lang.Float) defaultValue(fields()[38], record.getConversion(38));
+        record.genPower = fieldSetFlags()[39] ? this.genPower : (java.lang.Float) defaultValue(fields()[39], record.getConversion(39));
+        record.svrVol = fieldSetFlags()[40] ? this.svrVol : (java.lang.Float) defaultValue(fields()[40], record.getConversion(40));
+        record.svrCurr = fieldSetFlags()[41] ? this.svrCurr : (java.lang.Float) defaultValue(fields()[41], record.getConversion(41));
+        record.battDod = fieldSetFlags()[42] ? this.battDod : (java.lang.Float) defaultValue(fields()[42], record.getConversion(42));
+        record.battSoc = fieldSetFlags()[43] ? this.battSoc : (java.lang.Float) defaultValue(fields()[43], record.getConversion(43));
+        record.shelRoomTemp = fieldSetFlags()[44] ? this.shelRoomTemp : (java.lang.Float) defaultValue(fields()[44], record.getConversion(44));
+        record.shelBattTemp = fieldSetFlags()[45] ? this.shelBattTemp : (java.lang.Float) defaultValue(fields()[45], record.getConversion(45));
+        record.genFuel = fieldSetFlags()[46] ? this.genFuel : (java.lang.Float) defaultValue(fields()[46], record.getConversion(46));
+        record.genBattVol = fieldSetFlags()[47] ? this.genBattVol : (java.lang.Float) defaultValue(fields()[47], record.getConversion(47));
+        record.mainRunHrs = fieldSetFlags()[48] ? this.mainRunHrs : (java.lang.Float) defaultValue(fields()[48], record.getConversion(48));
+        record.dgTotRunHrs = fieldSetFlags()[49] ? this.dgTotRunHrs : (java.lang.Float) defaultValue(fields()[49], record.getConversion(49));
+        record.dgAutoRunHrs = fieldSetFlags()[50] ? this.dgAutoRunHrs : (java.lang.Float) defaultValue(fields()[50], record.getConversion(50));
+        record.dgManRunHrs = fieldSetFlags()[51] ? this.dgManRunHrs : (java.lang.Float) defaultValue(fields()[51], record.getConversion(51));
+        record.battRunHrs = fieldSetFlags()[52] ? this.battRunHrs : (java.lang.Float) defaultValue(fields()[52], record.getConversion(52));
+        record.solRunHrs = fieldSetFlags()[53] ? this.solRunHrs : (java.lang.Float) defaultValue(fields()[53], record.getConversion(53));
+        record.windRunHrs = fieldSetFlags()[54] ? this.windRunHrs : (java.lang.Float) defaultValue(fields()[54], record.getConversion(54));
+        record.battChgCycCnt = fieldSetFlags()[55] ? this.battChgCycCnt : (java.lang.Float) defaultValue(fields()[55], record.getConversion(55));
+        record.battDisChgCycCnt = fieldSetFlags()[56] ? this.battDisChgCycCnt : (java.lang.Float) defaultValue(fields()[56], record.getConversion(56));
+        record.totRectEnergy = fieldSetFlags()[57] ? this.totRectEnergy : (java.lang.Float) defaultValue(fields()[57], record.getConversion(57));
+        record.ipMainKwh = fieldSetFlags()[58] ? this.ipMainKwh : (java.lang.Float) defaultValue(fields()[58], record.getConversion(58));
+        record.dgEnerKwh = fieldSetFlags()[59] ? this.dgEnerKwh : (java.lang.Float) defaultValue(fields()[59], record.getConversion(59));
+        record.battEnerKwh = fieldSetFlags()[60] ? this.battEnerKwh : (java.lang.Float) defaultValue(fields()[60], record.getConversion(60));
+        record.solEnerKwh = fieldSetFlags()[61] ? this.solEnerKwh : (java.lang.Float) defaultValue(fields()[61], record.getConversion(61));
+        record.winEnerKwn = fieldSetFlags()[62] ? this.winEnerKwn : (java.lang.Float) defaultValue(fields()[62], record.getConversion(62));
+        record.load1Kwh = fieldSetFlags()[63] ? this.load1Kwh : (java.lang.Float) defaultValue(fields()[63], record.getConversion(63));
+        record.load2Kwh = fieldSetFlags()[64] ? this.load2Kwh : (java.lang.Float) defaultValue(fields()[64], record.getConversion(64));
+        record.load3Kwh = fieldSetFlags()[65] ? this.load3Kwh : (java.lang.Float) defaultValue(fields()[65], record.getConversion(65));
+        record.load4Kwh = fieldSetFlags()[66] ? this.load4Kwh : (java.lang.Float) defaultValue(fields()[66], record.getConversion(66));
+        record.load5Kwh = fieldSetFlags()[67] ? this.load5Kwh : (java.lang.Float) defaultValue(fields()[67], record.getConversion(67));
+        record.load6Kwh = fieldSetFlags()[68] ? this.load6Kwh : (java.lang.Float) defaultValue(fields()[68], record.getConversion(68));
+        record.totLoadEnergy = fieldSetFlags()[69] ? this.totLoadEnergy : (java.lang.Float) defaultValue(fields()[69], record.getConversion(69));
         return record;
-      } catch (Exception e) {
+      } catch (java.lang.Exception e) {
         throw new org.apache.avro.AvroRuntimeException(e);
       }
     }
   }
 
-  private static final org.apache.avro.io.DatumWriter
-    WRITER$ = new org.apache.avro.specific.SpecificDatumWriter(SCHEMA$);
+  @SuppressWarnings("unchecked")
+  private static final org.apache.avro.io.DatumWriter<DeviceTelemetry>
+    WRITER$ = (org.apache.avro.io.DatumWriter<DeviceTelemetry>)MODEL$.createDatumWriter(SCHEMA$);
 
   @Override public void writeExternal(java.io.ObjectOutput out)
     throws java.io.IOException {
     WRITER$.write(this, SpecificData.getEncoder(out));
   }
 
-  private static final org.apache.avro.io.DatumReader
-    READER$ = new org.apache.avro.specific.SpecificDatumReader(SCHEMA$);
+  @SuppressWarnings("unchecked")
+  private static final org.apache.avro.io.DatumReader<DeviceTelemetry>
+    READER$ = (org.apache.avro.io.DatumReader<DeviceTelemetry>)MODEL$.createDatumReader(SCHEMA$);
 
   @Override public void readExternal(java.io.ObjectInput in)
     throws java.io.IOException {

@@ -1,7 +1,7 @@
 package com.sample.beam.devices;
 import java.math.BigInteger;
 
-import javax.xml.bind.DatatypeConverter;
+//import javax.xml.bind.DatatypeConverter;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -423,7 +423,8 @@ public class TCPDevice extends Device{
 
 	public byte[] toByteArray(String s) {
 		LOG.info("Parsing raw hex data:" + s);
-		return DatatypeConverter.parseHexBinary(s);
+//		return DatatypeConverter.parseHexBinary(s);
+		return  null;
 	}
 
 	@Override

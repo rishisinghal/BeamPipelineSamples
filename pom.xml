@@ -8,9 +8,22 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<beam.version>2.18.0</beam.version>
+		<beam.version>2.37.0</beam.version>
+		<hadoop.version>2.7.1</hadoop.version>
 		<auto-value.version>1.7</auto-value.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.google.cloud</groupId>
+				<artifactId>libraries-bom</artifactId>
+				<version>24.3.0</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<!-- Beam Core -->
@@ -34,6 +47,24 @@
 			<version>${beam.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.beam</groupId>
+			<artifactId>beam-sdks-java-io-kafka</artifactId>
+			<version>${beam.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-io-parquet -->
 		<dependency>
 			<groupId>org.apache.beam</groupId>
@@ -52,6 +83,10 @@
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>beam-sdks-java-io-hadoop-common</artifactId>
+					<groupId>org.apache.beam</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -60,44 +95,30 @@
 			<groupId>org.apache.beam</groupId>
 			<artifactId>beam-sdks-java-io-google-cloud-platform</artifactId>
 			<version>${beam.version}</version>
-			
-			<exclusions> 
-				<exclusion> 
-				<groupId>com.google.api.grpc</groupId> 
-				<artifactId>grpc-google-common-protos</artifactId> 
-				</exclusion> 
-			</exclusions> 
-				
 		</dependency>
 
 		<!-- For GCS -->
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-storage</artifactId>
-			<version>1.36.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-core</artifactId>
-			<version>1.36.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.api-client</groupId>
 			<artifactId>google-api-client</artifactId>
-			<version>1.23.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava-jdk5</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.33.0</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.google.api/gax -->
 		<dependency>
 			<groupId>com.google.api</groupId>
 			<artifactId>gax</artifactId>
-			<version>1.40.0</version>
+			<version>2.10.0</version>
 		</dependency>
+
 
 		<!-- Local runner -->
 		<dependency>
@@ -120,13 +141,23 @@
 			<version>2.7</version>
 		</dependency>
 
-		<!-- BigQuery <dependency> <groupId>com.google.apis</groupId> <artifactId>google-api-services-bigquery</artifactId> 
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-bigquery</artifactId>
+		</dependency>
+
+		<!-- BigQuery <dependency> <groupId>com.google.apis</groupId> <artifactId>google-api-services-bigquery</artifactId>
 			<version>v2-rev391-1.23.0</version> </dependency> -->
 		<!-- GUAVA -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>22.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.kitesdk</groupId>
+			<artifactId>kite-data-core</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 
 		<!-- AVRO -->
@@ -156,14 +187,14 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.6.0</version>
+			<version>3.17.3</version>
 		</dependency>
 
 		<!-- Configuration -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-configuration2</artifactId>
-			<version>2.2</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -197,13 +228,20 @@
 			<artifactId>auto-value-annotations</artifactId>
 			<version>${auto-value.version}</version>
 		</dependency>
-  <dependency>
-    <groupId>com.google.auto.value</groupId>
-    <artifactId>auto-value</artifactId>
-    <version>${auto-value.version}</version>
-    <optional>true</optional>
-  </dependency>
 
+		<dependency>
+			<groupId>com.google.auto.value</groupId>
+			<artifactId>auto-value</artifactId>
+			<version>${auto-value.version}</version>
+			<optional>true</optional>
+  		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.cloud.bigtable/bigtable-client-core -->
+		<dependency>
+			<groupId>com.google.cloud.bigtable</groupId>
+			<artifactId>bigtable-client-core</artifactId>
+			<version>1.26.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -215,18 +253,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>com.google.auto.value</groupId>
-							<artifactId>auto-value</artifactId>
-							<version>${auto-value.version}</version>
-						</path>
-					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>

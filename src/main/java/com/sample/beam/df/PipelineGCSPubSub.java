@@ -1,29 +1,21 @@
 /**
  * ===========================================
- * The code is for DEMO purpose only and it is
+ * The code is for DEMO purpose only and it is 
  * not intended to be put in production
  * ===========================================
- *
+ * 
  */
 
 package com.sample.beam.df;
 
-import java.util.Map;
-
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.generic.GenericRecordBuilder;
-import org.apache.avro.protobuf.ProtobufDatumReader;
-import org.apache.beam.runners.dataflow.DataflowRunner;
+import com.sample.beam.df.process.GCSFileProcess;
+import com.sample.beam.df.utils.DatabaseOptions;
+import com.sample.beam.df.utils.Utils;
 import org.apache.beam.runners.dataflow.options.DataflowPipelineWorkerPoolOptions.AutoscalingAlgorithmType;
 import org.apache.beam.runners.direct.DirectRunner;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.coders.AvroCoder;
-import org.apache.beam.sdk.io.AvroIO;
 import org.apache.beam.sdk.io.FileIO;
-import org.apache.beam.sdk.io.parquet.ParquetIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.commons.configuration2.Configuration;
@@ -35,21 +27,17 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.sample.beam.df.shared.EmpProtos.Emp;
-import com.sample.beam.df.utils.DatabaseOptions;
-import com.sample.beam.df.utils.Utils;
+import static org.apache.beam.sdk.io.Compression.GZIP;
 
-public class PipelineAvroProtobufParquet {
-	private static final Logger LOG = LoggerFactory.getLogger(PipelineAvroProtobufParquet.class);
+public class PipelineGCSPubSub {
+	private static final Logger LOG = LoggerFactory.getLogger(PipelineGCSPubSub.class);
 	private static final String DEFAULT_CONFIG_FILE = "application1.properties";
 	private static Configuration config;
 	private DatabaseOptions options;
 
 	public static void main(String[] args) {
 
-		PipelineAvroProtobufParquet sp = new PipelineAvroProtobufParquet();
+		PipelineGCSPubSub sp = new PipelineGCSPubSub();
 		String propFile = null;
 
 		if(args.length > 0) // For custom properties file
@@ -58,7 +46,7 @@ public class PipelineAvroProtobufParquet {
 			propFile = DEFAULT_CONFIG_FILE;
 
 		sp.init(propFile);
-		sp.run();
+		sp.run();		
 	}
 
 	public void run()
@@ -71,48 +59,9 @@ public class PipelineAvroProtobufParquet {
 
 	public void doDataProcessing(Pipeline pipeline)
 	{
-		PCollection<byte[]> lines = pipeline.apply(AvroIO.read(byte[].class).from(config.getString("protobuf.location")));
-
-		ProtobufDatumReader<Emp> datumReader = new ProtobufDatumReader<Emp>(Emp.class);
-		Schema schema = datumReader.getSchema();
-		PCollection<GenericRecord> empRows=lines.apply("Convert",ParDo.of(new ByteArrToGenericRecordsFn(schema)));
-
-		empRows.setCoder(AvroCoder.of(schema))
-		.apply("Write to GCS in Parquet format",
-				FileIO.<GenericRecord>write()
-				.via(ParquetIO.sink(schema))
-				.to(config.getString("parquet.location")));
-	}
-
-	public static class ByteArrToGenericRecordsFn extends DoFn<byte[], GenericRecord> {
-
-		Schema schema;
-
-		public ByteArrToGenericRecordsFn(Schema schema) {
-			this.schema = schema;
-		}
-
-		@ProcessElement
-		public void processElement(ProcessContext c) {
-			LOG.info("Start convert:");
-			Emp e = null;
-			try {
-				e = Emp.parseFrom(c.element());
-				LOG.info("Emp is:"+e.toString());
-
-				GenericRecordBuilder builder=new GenericRecordBuilder(schema);
-
-				for(Map.Entry<FieldDescriptor,Object> entry : e.getAllFields().entrySet())
-				{
-//					Log.info("Field is:"+f.name());
-					builder.set(entry.getKey().getName(), entry.getValue());
-				}
-				c.output(builder.build());
-
-			} catch (InvalidProtocolBufferException e1) {
-				e1.printStackTrace();
-			}
-		}
+		PCollection<String> fileRows = pipeline.apply(FileIO.match().filepattern(config.getString("gcs.folderPath")))
+				.apply(FileIO.readMatches().withCompression(GZIP))
+				.apply(ParDo.of(new GCSFileProcess()));
 	}
 
 	public void init(String propFile)
@@ -132,16 +81,16 @@ public class PipelineAvroProtobufParquet {
 
 			// Set DataFlow options
 			options.setAppName(config.getString("df.appName"));
-			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") +
+			options.setStagingLocation(config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.stagingLocation"));
 
-			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") +
+			String tempLocation = config.getString("gcs.urlBase") + config.getString("gcs.bucketName") + 
 					"/"+config.getString("gcs.tempLocation");
 
 			LOG.info("Temp location:"+tempLocation);
 			options.setTempLocation(tempLocation);
 
-//			options.setRunner(DataflowRunner.class);
+			//			options.setRunner(DataflowRunner.class);
 			options.setRunner(DirectRunner.class);
 			options.setStreaming(false);
 			options.setProject(config.getString("gcp.projectId"));
